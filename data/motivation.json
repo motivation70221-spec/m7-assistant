@@ -1,0 +1,78 @@
+[
+  {
+    "patterns": [
+      "je veux de la motivation",
+      "motive moi",
+      "motive-moi",
+      "j'ai besoin de motivation",
+      "je manque de motivation",
+      "donne moi du courage",
+      "donne-moi du courage",
+      "je veux abandonner",
+      "je suis découragé",
+      "je suis decourage",
+      "je n'ai plus de courage"
+    ],
+    "response": "❤️ Mon ami, écoute bien : les moments difficiles ne signifient pas que ton histoire est terminée. Tu peux avancer petit à petit, même lorsque le chemin semble compliqué. Ne te compare pas aux autres : concentre-toi sur tes propres progrès. 💪 Dis-moi, qu'est-ce qui te décourage en ce moment ?"
+  },
+  {
+    "patterns": [
+      "comment rester motivé",
+      "comment rester motive",
+      "comment garder la motivation",
+      "comment être discipliné",
+      "comment etre discipline",
+      "comment atteindre mes objectifs"
+    ],
+    "response": "💪 Pour garder ta motivation, commence par un petit objectif réalisable. Avance un peu chaque jour, même lorsque tu n'en as pas envie. Organise ton temps, célèbre tes progrès et apprends de tes erreurs. La discipline t'aide à continuer lorsque la motivation diminue. ❤️ Quel objectif aimerais-tu atteindre en ce moment ?"
+  },
+  {
+    "patterns": [
+      "je traverse une période difficile",
+      "je traverse une periode difficile",
+      "tout va mal",
+      "j'ai beaucoup de problèmes",
+      "j'ai beaucoup de problemes",
+      "la vie est difficile",
+      "je suis fatigué de tout",
+      "je suis fatigue de tout"
+    ],
+    "response": "❤️ Je suis désolé que tu traverses une période difficile. Tu n'es pas obligé de tout résoudre aujourd'hui. Prends le temps de respirer, concentre-toi sur ce que tu peux faire maintenant et n'hésite pas à parler à une personne de confiance. Tu peux me raconter ce qui se passe si tu le souhaites. Je vais essayer de t'aider à réfléchir aux prochaines étapes."
+  },
+  {
+    "patterns": [
+      "j'ai échoué",
+      "j'ai echoue",
+      "j'ai fait un échec",
+      "j'ai fait un echec",
+      "je ne réussis jamais",
+      "je ne reussis jamais",
+      "j'ai peur d'échouer",
+      "j'ai peur d'echouer"
+    ],
+    "response": "🌱 Un échec ne définit pas ta valeur. Il peut t'aider à comprendre ce qui doit changer pour la prochaine tentative. Prends le temps d'identifier ce qui n'a pas fonctionné, puis choisis une petite action pour recommencer. Tu n'as pas besoin d'être parfait pour progresser. ❤️ Qu'aimerais-tu réussir, et qu'est-ce qui t'a empêché d'y arriver jusqu'ici ?"
+  },
+  {
+    "patterns": [
+      "je veux réussir",
+      "je veux reussir",
+      "comment réussir dans la vie",
+      "comment reussir dans la vie",
+      "je veux changer ma vie",
+      "je veux améliorer ma vie",
+      "je veux ameliorer ma vie"
+    ],
+    "response": "🌟 Pour construire une vie qui te rend fier, commence par définir ce que réussir signifie pour toi. Fixe-toi des objectifs réalistes, développe tes compétences, protège ton temps et apprends de tes erreurs. Les résultats prennent souvent du temps. ❤️ Dis-moi : quel est le changement le plus important que tu souhaites réaliser dans ta vie ?"
+  },
+  {
+    "patterns": [
+      "je me sens seul",
+      "je me sens seule",
+      "personne ne me comprend",
+      "je n'ai personne",
+      "je me sens isolé",
+      "je me sens isole"
+    ],
+    "response": "❤️ Se sentir seul peut être douloureux. Mais tu mérites d'être écouté et respecté. Si tu le peux, essaie de parler à une personne de confiance, même avec quelques mots. Tu n'as pas besoin de tout garder pour toi. Si tu veux, raconte-moi ce qui te fait ressentir cette solitude."
+  }
+]
