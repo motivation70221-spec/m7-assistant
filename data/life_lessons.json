@@ -1,0 +1,77 @@
+[
+  {
+    "patterns": [
+      "raconte-moi une leçon de vie",
+      "raconte moi une lecon de vie",
+      "une leçon de vie",
+      "une lecon de vie",
+      "donne-moi un conseil",
+      "donne moi un conseil",
+      "apprends-moi quelque chose",
+      "apprends moi quelque chose"
+    ],
+    "response": "❤️ Leçon de vie : ne juge pas une personne uniquement sur ce que tu vois. Chacun traverse des épreuves que les autres ne connaissent pas. Apprends à écouter avant de juger, à respecter les différences et à reconnaître tes propres erreurs. 🌱 Selon toi, pourquoi est-il important de ne pas juger trop vite les autres ?"
+  },
+  {
+    "patterns": [
+      "parlons du respect",
+      "c'est quoi le respect",
+      "c est quoi le respect",
+      "comment respecter les autres",
+      "pourquoi le respect est important"
+    ],
+    "response": "🤝 Le respect consiste à reconnaître la dignité des autres, même lorsque nous ne sommes pas d'accord avec eux. Il se manifeste par nos paroles, nos actes et notre manière d'écouter. Respecter quelqu'un ne signifie pas accepter tous ses comportements : tu peux poser des limites sans l'humilier. ❤️ Pour toi, quel comportement montre le plus de respect ?"
+  },
+  {
+    "patterns": [
+      "parlons de la patience",
+      "comment être patient",
+      "comment etre patient",
+      "comment garder patience",
+      "pourquoi la patience est importante"
+    ],
+    "response": "🌱 La patience nous aide à traverser les difficultés sans prendre de décisions précipitées. Être patient ne signifie pas rester immobile : tu peux agir avec détermination tout en acceptant que certains résultats prennent du temps. ❤️ Dans quelle situation trouves-tu le plus difficile de rester patient ?"
+  },
+  {
+    "patterns": [
+      "parlons de l'honnêteté",
+      "parlons de l honnetete",
+      "c'est quoi l'honnêteté",
+      "c est quoi l honnetete",
+      "pourquoi être honnête",
+      "pourquoi etre honnete"
+    ],
+    "response": "💎 L'honnêteté, c'est essayer de dire la vérité et d'agir avec intégrité, même lorsque personne ne nous regarde. Elle contribue à construire la confiance. Reconnaître une erreur peut être difficile, mais c'est souvent le premier pas pour la réparer. ❤️ Pourquoi penses-tu que la confiance est parfois longue à construire et rapide à perdre ?"
+  },
+  {
+    "patterns": [
+      "parlons de l'amitié",
+      "c'est quoi un vrai ami",
+      "c est quoi un vrai ami",
+      "comment reconnaître un vrai ami",
+      "comment reconnaitre un vrai ami",
+      "comment choisir ses amis"
+    ],
+    "response": "🤝 Une véritable amitié repose sur la confiance, le respect, la sincérité et le soutien réciproque. Un bon ami ne doit pas forcément être d'accord avec toi tout le temps, mais il peut te parler honnêtement sans chercher à t'humilier. Une amitié saine respecte aussi tes limites. ❤️ Pour toi, quelle est la qualité la plus importante chez un ami ?"
+  },
+  {
+    "patterns": [
+      "parlons des choix",
+      "comment faire les bons choix",
+      "comment prendre une décision",
+      "j'ai une décision à prendre",
+      "j'ai une decision a prendre"
+    ],
+    "response": "🧠 Nos choix peuvent avoir des conséquences sur notre avenir. Avant une décision importante, prends le temps de comprendre la situation, de comparer les possibilités et de réfléchir aux conséquences à court et à long terme. Si nécessaire, demande conseil à une personne de confiance. ❤️ Quelle décision essaies-tu de prendre ? Nous pouvons réfléchir ensemble aux différentes possibilités."
+  },
+  {
+    "patterns": [
+      "parlons du pardon",
+      "comment pardonner",
+      "dois-je pardonner",
+      "dois je pardonner",
+      "comment oublier une blessure"
+    ],
+    "response": "❤️ Le pardon est un chemin personnel. Il peut aider à avancer, mais il ne signifie pas que ce qui s'est passé était acceptable. Pardonner ne t'oblige pas à oublier, à rétablir une relation ou à tolérer de nouveaux comportements blessants. Tu peux prendre du temps et poser des limites pour te protéger. 🌱 Qu'est-ce qui te fait réfléchir au pardon aujourd'hui ?"
+  }
+]
