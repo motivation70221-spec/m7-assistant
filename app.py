@@ -14,13 +14,19 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 def normalize_text(text):
     """Normalise le texte pour faciliter sa reconnaissance."""
     text = str(text).lower().strip()
-    text = unicodedata.normalize("NFD", text)
 
+    # Harmonise les apostrophes typographiques.
+    text = text.replace("’", "'").replace("‘", "'")
+    text = text.replace("`", "'").replace("´", "'")
+
+    # Supprime les accents.
+    text = unicodedata.normalize("NFD", text)
     text = "".join(
         char for char in text
         if unicodedata.category(char) != "Mn"
     )
 
+    # Supprime la ponctuation inutile.
     text = re.sub(r"[^\w\s']", " ", text)
     text = re.sub(r"\s+", " ", text)
 
@@ -28,7 +34,7 @@ def normalize_text(text):
 
 
 def load_knowledge():
-    """Charge les connaissances depuis les fichiers JSON."""
+    """Charge les connaissances disponibles dans les fichiers JSON."""
     knowledge = []
 
     if not os.path.isdir(DATA_DIR):
@@ -87,7 +93,9 @@ def get_words(text):
         "et", "moi", "mon", "pour", "que", "qui",
         "sur", "toi", "une", "les", "aux", "par",
         "mais", "donc", "comment", "pourquoi",
-        "peux", "peut", "veux", "voudrais"
+        "peux", "peut", "veux", "voudrais", "quoi",
+        "quel", "quelle", "quels", "quelles", "pourrait",
+        "pourrais", "faire", "parle", "parlons"
     }
 
     return {
@@ -98,28 +106,22 @@ def get_words(text):
 
 
 def score_pattern(message, pattern):
-    """Évalue la pertinence d'une phrase connue."""
+    """Évalue la correspondance entre un message et une phrase connue."""
     message = normalize_text(message)
     pattern = normalize_text(pattern)
 
     if not message or not pattern:
         return 0.0
 
-    # Une phrase identique est une correspondance certaine.
+    # Correspondance exacte.
     if message == pattern:
         return 1.0
 
-    # Une expression complète présente dans le message
-    # constitue une bonne correspondance.
-    if len(pattern) >= 5:
-        expression = (
-            r"(?<!\w)"
-            + re.escape(pattern)
-            + r"(?!\w)"
-        )
+    # Une phrase connue présente intégralement dans le message.
+    expression = r"(?<!\w)" + re.escape(pattern) + r"(?!\w)"
 
-        if re.search(expression, message):
-            return 0.96
+    if len(pattern) >= 5 and re.search(expression, message):
+        return 0.96
 
     message_words = get_words(message)
     pattern_words = get_words(pattern)
@@ -130,26 +132,23 @@ def score_pattern(message, pattern):
     common_words = message_words.intersection(pattern_words)
 
     if not common_words:
-        # La tolérance aux fautes n'est utilisée que pour
-        # des phrases de longueur suffisante.
+        # Tolérance limitée aux petites fautes de frappe.
         if len(message) >= 12 and len(pattern) >= 12:
             ratio = SequenceMatcher(
                 None, message, pattern
             ).ratio()
 
-            if ratio >= 0.82:
+            if ratio >= 0.84:
                 return ratio * 0.75
 
         return 0.0
 
-    # La correspondance doit couvrir une partie significative
-    # des mots de la phrase connue.
     coverage = len(common_words) / len(pattern_words)
     precision = len(common_words) / len(message_words)
 
     score = 0.70 * coverage + 0.30 * precision
 
-    # Une correspondance sur un seul mot générique est insuffisante.
+    # Un seul mot partagé ne suffit pas à choisir une réponse.
     if len(common_words) == 1:
         word = next(iter(common_words))
 
@@ -162,7 +161,7 @@ def score_pattern(message, pattern):
 
 
 def find_response(message):
-    """Choisit la réponse correspondant le mieux à la demande."""
+    """Choisit la réponse connue la plus pertinente."""
     normalized = normalize_text(message)
 
     if not normalized:
@@ -196,12 +195,10 @@ def find_response(message):
 
     best = candidates[0]
 
-    # Une ressemblance trop faible ne suffit pas.
     if best["score"] < 0.60:
         return None
 
-    # En cas d'ambiguïté, on préfère demander une précision
-    # plutôt que choisir arbitrairement une réponse.
+    # Évite les choix arbitraires entre réponses presque équivalentes.
     if len(candidates) > 1:
         second = candidates[1]
 
@@ -215,7 +212,7 @@ def find_response(message):
 
 
 def get_topics():
-    """Retourne les sujets proposés dans l'interface."""
+    """Retourne les sujets affichés dans l'interface."""
     return [
         {
             "label": "❤️ Motivation",
@@ -235,7 +232,7 @@ def get_topics():
         },
         {
             "label": "🕌 Foi et patience",
-            "message": "Parlons de la foi et de la patience"
+            "message": "Parlons de la patience"
         },
         {
             "label": "🎬 Histoires M7",
@@ -260,7 +257,7 @@ def fallback_response():
 
 
 def get_suggestion_response():
-    """Présente les sujets que M7 peut aborder."""
+    """Présente les sujets disponibles dans M7."""
     return (
         "Avec plaisir ! ❤️ Voici quelques sujets que nous "
         "pouvons explorer ensemble :\n\n"
@@ -269,11 +266,145 @@ def get_suggestion_response():
         "🤝 Amitié : comprendre ce qui fait une relation sincère.\n"
         "🧠 Leçons de vie : réfléchir à nos choix et à nos erreurs.\n"
         "🙏 Foi et patience : garder espoir pendant les épreuves.\n"
-        "❤️ Amour : parler des relations, des déceptions et "
-        "de la reconstruction après une blessure.\n"
+        "❤️ Amour : parler des relations et des déceptions.\n"
         "🎬 Histoires M7 : découvrir des histoires inspirantes.\n\n"
         "Quel sujet aimerais-tu découvrir en premier ?"
     )
+
+
+def get_topic_response(message):
+    """
+    Reconnaît quelques intentions fréquentes et les relie
+    aux connaissances déjà présentes dans les fichiers JSON.
+    """
+    normalized = normalize_text(message)
+    words = set(normalized.split())
+
+    # Demande d'informations sur M7 ou son créateur.
+    if normalized in {"m7", "cheikh"}:
+        if normalized == "m7":
+            return find_response("qui es tu")
+
+        return find_response("qui est cheikh")
+
+    creator_terms = {
+        "cheikh", "createur", "cree", "creation"
+    }
+
+    identity_terms = {
+        "qui", "identite", "presente", "nom"
+    }
+
+    if (
+        words.intersection(creator_terms)
+        and (
+            words.intersection(identity_terms)
+            or "parle" in words
+            or "raconte" in words
+        )
+    ):
+        if "cheikh" in words or "motivation7" in words:
+            return find_response("qui est cheikh")
+
+        return find_response("qui t'a créé")
+
+    # Reconnaissance des demandes de suggestions, même formulées
+    # avec des mots supplémentaires.
+    suggestion_terms = {
+        "propose", "proposes", "sujet", "sujets",
+        "interesser", "interesse", "interesserait",
+        "idee", "idees"
+    }
+
+    if (
+        words.intersection(suggestion_terms)
+        and (
+            "propose" in words
+            or "proposes" in words
+            or "sujet" in words
+            or "sujets" in words
+            or "interesser" in words
+            or "interesserait" in words
+        )
+    ):
+        return get_suggestion_response()
+
+    # Le message doit évoquer une demande de discussion,
+    # ou être simplement le nom d'un sujet.
+    request_terms = {
+        "parle", "parlons", "raconte", "explique",
+        "dis", "discussion", "parler", "parlons",
+        "aborder", "decouvrir"
+    }
+
+    is_topic_request = bool(words.intersection(request_terms))
+
+    # Confiance en soi : réponse dédiée, car ce sujet n'a pas
+    # encore sa propre réponse dans les fichiers JSON actuels.
+    confidence_terms = {
+        "confiance", "confiant", "confiante",
+        "timide", "timidite", "estime"
+    }
+
+    if words.intersection(confidence_terms) and (
+        is_topic_request or len(words) <= 4
+    ):
+        return (
+            "🌟 La confiance en soi se construit progressivement. "
+            "Tu n'as pas besoin d'être parfait pour reconnaître "
+            "ta valeur. Commence par identifier tes qualités, "
+            "avance à ton rythme et apprends à voir les erreurs "
+            "comme des occasions de progresser. ❤️\n\n"
+            "Dans quelle situation aimerais-tu avoir davantage "
+            "confiance en toi ?"
+        )
+
+    # Relie les sujets aux formulations déjà présentes dans la
+    # bibliothèque de connaissances.
+    topic_routes = [
+        (
+            {"amitie", "ami", "amis", "amie"},
+            "parlons de l'amitie"
+        ),
+        (
+            {"motivation", "motive", "motiver", "courage"},
+            "je veux de la motivation"
+        ),
+        (
+            {"patience", "patient", "patiente"},
+            "parlons de la patience"
+        ),
+        (
+            {"respect", "respecter"},
+            "parlons du respect"
+        ),
+        (
+            {"honnetete", "honnete", "honnetes"},
+            "parlons de l'honnetete"
+        ),
+        (
+            {"pardon", "pardonner", "blessure"},
+            "parlons du pardon"
+        ),
+        (
+            {"choix", "decision", "decider"},
+            "parlons des choix"
+        ),
+        (
+            {"lecon", "lecons", "vie"},
+            "raconte-moi une leçon de vie"
+        )
+    ]
+
+    for topic_words, canonical_question in topic_routes:
+        if words.intersection(topic_words):
+            if is_topic_request or len(words) <= 4:
+                response = find_response(canonical_question)
+
+                if response:
+                    return response
+
+    return None
 
 
 @app.route("/")
@@ -297,22 +428,12 @@ def chat():
             "topics": get_topics()
         })
 
-    # Demandes générales de suggestions.
-    suggestion_phrases = {
-        "que proposes tu",
-        "qu'est ce que tu proposes",
-        "qu est ce que tu proposes",
-        "que puis je faire",
-        "que peut on faire",
-        "de quoi peut on parler",
-        "de quoi pouvons nous parler",
-        "propose moi un sujet",
-        "donne moi un sujet"
-    }
+    # Recherche d'abord une intention connue.
+    response = get_topic_response(message)
 
-    if normalized in suggestion_phrases:
-        response = get_suggestion_response()
-    else:
+    # Si aucune intention n'a été reconnue, recherche dans
+    # toute la bibliothèque de connaissances.
+    if response is None:
         response = find_response(message)
 
     if response is None:
