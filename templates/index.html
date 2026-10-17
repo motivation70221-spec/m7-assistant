@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#7c3aed">
+
+    <title>M7 Assistant ❤️</title>
+
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #5b21b6;
+            --background: #f7f5ff;
+            --surface: #ffffff;
+            --text: #241b35;
+            --muted: #746b83;
+            --border: #e9e3f5;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        button, input {
+            font: inherit;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 760px;
+            min-height: 100vh;
+            margin: 0 auto;
+            background: var(--surface);
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 22px 18px;
+            color: white;
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            font-size: 28px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 23px;
+        }
+
+        .subtitle {
+            margin: 5px 0 0;
+            font-size: 13px;
+            opacity: 0.92;
+        }
+
+        .status {
+            margin-top: 16px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #86efac;
+            border-radius: 50%;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 15px;
+        }
+
+        .welcome {
+            text-align: center;
+            padding: 12px 8px 20px;
+        }
+
+        .welcome-icon {
+            font-size: 42px;
+        }
+
+        .welcome h2 {
+            margin: 8px 0;
+            font-size: 21px;
+        }
+
+        .welcome p {
+            margin: 0 auto;
+            max-width: 420px;
+            color: var(--muted);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .section-title {
+            margin: 10px 0;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .topics {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px;
+            margin-bottom: 20px;
+        }
+
+        .topic {
+            padding: 13px 10px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: #fff;
+            color: var(--text);
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .topic:active {
+            background: #f0e8ff;
+        }
+
+        .topic span {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 21px;
+        }
+
+        .topic strong {
+            font-size: 13px;
+        }
+
+        .chat {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-bottom: 15px;
+        }
+
+        .message {
+            max-width: 88%;
+            padding: 12px 14px;
+            border-radius: 16px;
+            line-height: 1.6;
+            font-size: 14px;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background: #f1ebff;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .typing {
+            color: var(--muted);
+            font-size: 12px;
+            padding: 5px;
+        }
+
+        .composer {
+            position: sticky;
+            bottom: 0;
+            padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+            background: white;
+            border-top: 1px solid var(--border);
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #messageInput {
+            min-width: 0;
+            flex: 1;
+            padding: 13px 14px;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            outline: none;
+            background: #faf9ff;
+            color: var(--text);
+        }
+
+        #messageInput:focus {
+            border-color: var(--primary);
+        }
+
+        .send-button {
+            width: 46px;
+            height: 46px;
+            flex-shrink: 0;
+            border: none;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+        }
+
+        .privacy {
+            text-align: center;
+            color: var(--muted);
+            font-size: 11px;
+            margin: 9px 0 0;
+        }
+
+        .account-link {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .account-link button {
+            padding: 4px;
+            border: none;
+            background: none;
+            color: var(--primary);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        footer {
+            padding: 14px;
+            text-align: center;
+            color: var(--muted);
+            background: #faf9ff;
+            font-size: 11px;
+        }
+
+        @media (min-width: 600px) {
+            body {
+                padding: 24px 12px;
+            }
+
+            .app {
+                min-height: calc(100vh - 48px);
+                border-radius: 22px;
+                overflow: hidden;
+                box-shadow: 0 10px 45px rgba(50, 30, 80, 0.1);
+            }
+
+            .topics {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <header>
+            <div class="brand">
+                <div class="logo">❤️</div>
+                <div>
+                    <h1>M7 Assistant</h1>
+                    <p class="subtitle">Motivation7 · Discussion et leçons de vie</p>
+                </div>
+            </div>
+
+            <div class="status">
+                <span class="status-dot"></span>
+                <span>Prêt à discuter avec toi</span>
+            </div>
+        </header>
+
+        <main>
+            <section class="welcome" id="welcome">
+                <div class="welcome-icon">🤝</div>
+                <h2>Bienvenue chez M7 !</h2>
+                <p>
+                    Un espace pour parler, réfléchir, trouver du courage
+                    et partager des leçons de vie. ❤️
+                </p>
+            </section>
+
+            <section aria-label="Sujets de discussion">
+                <p class="section-title">De quoi veux-tu parler ?</p>
+
+                <div class="topics" id="topics">
+                    <button class="topic" data-message="Je veux de la motivation">
+                        <span>💪</span>
+                        <strong>Motivation</strong>
+                    </button>
+
+                    <button class="topic" data-message="Comment avoir confiance en moi ?">
+                        <span>🌟</span>
+                        <strong>Confiance en soi</strong>
+                    </button>
+
+                    <button class="topic" data-message="Raconte-moi une leçon de vie">
+                        <span>🧠</span>
+                        <strong>Leçons de vie</strong>
+                    </button>
+
+                    <button class="topic" data-message="Parlons de l'amitié">
+                        <span>🤝</span>
+                        <strong>Amitié</strong>
+                    </button>
+
+                    <button class="topic" data-message="Parlons de la foi et de la patience">
+                        <span>🙏</span>
+                        <strong>Foi et patience</strong>
+                    </button>
+
+                    <button class="topic" data-message="Raconte-moi une histoire M7">
+                        <span>🎬</span>
+                        <strong>Histoires M7</strong>
+                    </button>
+                </div>
+            </section>
+
+            <section
+                class="chat"
+                id="chat"
+                aria-label="Conversation"
+                aria-live="polite"
+            >
+                <div class="message bot">
+                    Salut mon ami ! ❤️ Je suis M7, l'assistant de Motivation7.
+                    Choisis un sujet ou écris-moi directement.
+                </div>
+            </section>
+        </main>
+
+        <section class="composer" aria-label="Écrire un message">
+            <form id="chatForm">
+                <div class="input-row">
+                    <input
+                        type="text"
+                        id="messageInput"
+                        placeholder="Écris ton message… 😊"
+                        maxlength="2000"
+                        autocomplete="off"
+                        aria-label="Ton message"
+                        required
+                    >
+
+                    <button
+                        type="submit"
+                        class="send-button"
+                        id="sendButton"
+                        aria-label="Envoyer le message"
+                    >➤</button>
+                </div>
+            </form>
+
+            <p class="privacy">
+                Respect, écoute et bienveillance ❤️
+            </p>
+
+            <div class="account-link">
+                Tu souhaites retrouver tes échanges ?
+                <button type="button" id="accountButton">
+                    Espace utilisateur
+                </button>
+            </div>
+        </section>
+
+        <footer>
+            M7 Assistant · Un projet de Motivation7 ❤️
+        </footer>
+    </div>
+
+    <script>
+        const chat = document.getElementById("chat");
+        const form = document.getElementById("chatForm");
+        const input = document.getElementById("messageInput");
+        const sendButton = document.getElementById("sendButton");
+        const welcome = document.getElementById("welcome");
+        const topics = document.getElementById("topics");
+
+        function addMessage(text, type) {
+            const message = document.createElement("div");
+            message.className = "message " + type;
+
+            // textContent évite d'interpréter la réponse comme du HTML.
+            message.textContent = text;
+
+            chat.appendChild(message);
+            message.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest"
+            });
+        }
+
+        async function sendMessage(rawMessage) {
+            const message = rawMessage.trim();
+
+            if (!message || sendButton.disabled) {
+                return;
+            }
+
+            welcome.hidden = true;
+            addMessage(message, "user");
+
+            input.value = "";
+            sendButton.disabled = true;
+
+            const typing = document.createElement("div");
+            typing.className = "typing";
+            typing.textContent = "M7 réfléchit…";
+            chat.appendChild(typing);
+
+            try {
+                const response = await fetch("/api/chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: message
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Le serveur a répondu avec une erreur.");
+                }
+
+                const data = await response.json();
+                typing.remove();
+
+                addMessage(
+                    typeof data.reply === "string"
+                        ? data.reply
+                        : "Désolé, je n'ai pas pu préparer ma réponse.",
+                    "bot"
+                );
+
+            } catch (error) {
+                typing.remove();
+
+                addMessage(
+                    "Je n'arrive pas à contacter mon serveur pour le moment. "
+                    + "Vérifie ta connexion et réessaie dans un instant. ❤️",
+                    "bot"
+                );
+
+            } finally {
+                sendButton.disabled = false;
+                input.focus();
+            }
+        }
+
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
+            sendMessage(input.value);
+        });
+
+        topics.addEventListener("click", function(event) {
+            const button = event.target.closest("[data-message]");
+
+            if (button) {
+                sendMessage(button.dataset.message);
+            }
+        });
+
+        document.getElementById("accountButton").addEventListener(
+            "click",
+            function() {
+                addMessage(
+                    "L'espace utilisateur sera disponible dans une prochaine "
+                    + "version. Nous le construirons avec une connexion sécurisée. ❤️",
+                    "bot"
+                );
+            }
+        );
+    </script>
+</body>
+</html>
