@@ -308,7 +308,10 @@ def get_topic_response(message):
 
     if normalized == "cheikh":
         return find_response("qui est cheikh")
-
+        
+     creator_terms = {
+        "cheikh", "createur", "cree", "creation"
+    }
     identity_terms = {
         "qui", "identite", "presente", "nom"
     }
