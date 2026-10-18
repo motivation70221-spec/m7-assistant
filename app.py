@@ -429,3 +429,138 @@ def get_topic_response(message):
                     return response
 
     return None
+ # ==========================================================
+# ROUTES FLASK — M7 ASSISTANT
+# ==========================================================
+
+@app.route("/", methods=["GET"])
+def home():
+    """Affiche l'interface de M7."""
+
+    template_path = os.path.join(
+        BASE_DIR, "templates", "index.html"
+    )
+
+    root_html_path = os.path.join(
+        BASE_DIR, "index.html"
+    )
+
+    if os.path.isfile(template_path):
+        return render_template("index.html")
+
+    if os.path.isfile(root_html_path):
+        with open(root_html_path, "r", encoding="utf-8") as file:
+            html = file.read()
+
+        return app.response_class(
+            html,
+            mimetype="text/html"
+        )
+
+    return (
+        "M7 Assistant : fichier index.html introuvable. "
+        "Vérifie son emplacement dans le dépôt GitHub.",
+        404
+    )
+
+
+@app.route("/api/chat", methods=["POST"])
+def chat_api():
+    """Reçoit un message et renvoie une réponse à l'interface."""
+
+    data = request.get_json(silent=True) or {}
+    message = data.get("message", "")
+
+    if not isinstance(message, str):
+        return jsonify({
+            "reply": "Envoie-moi un message écrit, s'il te plaît. ❤️"
+        }), 400
+
+    message = message.strip()
+
+    if not message:
+        return jsonify({
+            "reply": "Je suis là, mon ami. ❤️ Écris-moi ce que tu souhaites partager."
+        })
+
+    # Reconnaissance des emojis envoyés seuls.
+    emoji_responses = {
+        "❤️": "❤️ Je t'envoie beaucoup de bonnes pensées, mon ami.",
+        "❤": "❤️ Je t'envoie beaucoup de bonnes pensées, mon ami.",
+        "🥰": "🥰 Quel joli message ! Je te souhaite beaucoup de douceur.",
+        "😊": "😊 Ton sourire fait plaisir ! De quoi aimerais-tu parler ?",
+        "😂": "😂 Un peu de joie fait du bien ! Raconte-moi.",
+        "😢": "❤️ Je suis là pour t'écouter. Veux-tu me dire ce qui te rend triste ?",
+        "😭": "❤️ Prends ton temps. Tu peux me parler de ce que tu traverses.",
+        "💔": "💔 Les blessures du cœur peuvent faire mal. Tu n'es pas obligé de tout porter seul.",
+        "🙏": "🙏 Que la patience et l'espoir t'accompagnent dans les moments difficiles.",
+        "💪": "💪 Continue d'avancer pas à pas. Même les petits progrès comptent.",
+        "👍": "👍 Merci, mon ami ! On continue ensemble.",
+        "😘": "❤️ Je t'envoie une pensée bienveillante !"
+    }
+
+    if message in emoji_responses:
+        return jsonify({"reply": emoji_responses[message]})
+
+    # Réponses simples aux salutations et aux politesses.
+    normalized = normalize_text(message)
+
+    greetings = {
+        "bonjour", "bonsoir", "salut", "coucou",
+        "salam", "hello", "bon matin"
+    }
+
+    if normalized in greetings:
+        return jsonify({
+            "reply": (
+                "Salut mon ami ! ❤️ Heureux de discuter avec toi. "
+                "Comment vas-tu aujourd'hui ?"
+            )
+        })
+
+    if normalized in {"merci", "merci beaucoup", "je te remercie"}:
+        return jsonify({
+            "reply": (
+                "Avec plaisir, mon ami ! ❤️ Je suis là pour échanger "
+                "avec toi. Tu peux continuer."
+            )
+        })
+
+    if normalized in {"ca va", "comment ca va", "comment vas tu"}:
+        return jsonify({
+            "reply": (
+                "Je suis prêt à discuter avec toi ! 😊 "
+                "Et toi, comment te sens-tu aujourd'hui ?"
+            )
+        })
+
+    # Cherche d'abord une réponse liée au sujet du message.
+    reply = get_topic_response(message)
+
+    # Si aucune réponse n'a été trouvée, consulte les fichiers JSON.
+    if not reply:
+        reply = find_response(message)
+
+    # Réponse de secours si la bibliothèque ne connaît pas la question.
+    if not reply:
+        reply = fallback_response()
+
+    return jsonify({"reply": reply})
+
+
+@app.route("/health", methods=["GET"])
+def health_check():
+    """Vérifie que le serveur M7 fonctionne."""
+
+    return jsonify({
+        "status": "ok",
+        "application": "M7 Assistant"
+    })
+
+
+if __name__ == "__main__":
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 5000)),
+        debug=False
+    )
