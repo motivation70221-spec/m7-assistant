@@ -1,6 +1,16 @@
 [
   {
     "patterns": [
+      "❤️",
+      "🥰",
+      "🥰",
+      "💚",
+      "🤍"
+    ],
+    "response": "❤️😇"
+  },
+  {
+    "patterns": [
       "raconte moi une lecon de vie",
       "une lecon de vie",
       "donne moi un conseil",
