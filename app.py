@@ -419,7 +419,7 @@ def get_topic_response(message):
             "raconte une histoire inspirante"
             ),
             (
-            {"❤️", "🥰", "😍", "💚"},
+            {"❤️❤️❤️❤️❤️", "🥰🥰🥰🥰🥰🥰", "😍😍😍😍😍😍", "💚💚💚💚💚💚"},
             "❤️😇"
         )    
     ]
