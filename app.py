@@ -359,7 +359,6 @@ def get_topic_response(message):
             "confiance en toi ?"
         )
 
-           # Relie les sujets aux formulations déjà présentes dans la
            # bibliothèque de connaissances.
              topic_routes = [
         (
