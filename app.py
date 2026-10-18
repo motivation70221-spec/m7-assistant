@@ -630,6 +630,65 @@ def get_contextual_response(message):
         if response:
             return response
     return None
+# ==========================================================
+# COMPRENDRE LES RÉPONSES QUI SUIVENT UNE QUESTION
+# ==========================================================
+def get_followup_response(message):
+    """
+    Comprend certaines réponses qui suivent une discussion
+    sur l'amitié et rebondit sur les valeurs exprimées.
+    """
+    normalized = normalize_text(message)
+    words = set(normalized.split())
+
+    last_topic = session.get("last_topic")
+
+    if last_topic != "amitie":
+        return None
+
+    values = {
+        "respect": "le respect",
+        "ecoute": "l'écoute",
+        "bienveillance": "la bienveillance",
+        "sincerite": "la sincérité",
+        "confiance": "la confiance",
+        "soutien": "le soutien",
+        "fidelite": "la fidélité",
+        "honnetete": "l'honnêteté"
+    }
+
+    recognized_values = [
+        description
+        for keyword, description in values.items()
+        if keyword in words
+    ]
+
+    if len(recognized_values) < 2:
+        return None
+
+    if len(recognized_values) == 2:
+        joined_values = (
+            recognized_values[0]
+            + " et "
+            + recognized_values[1]
+        )
+    else:
+        joined_values = (
+            ", ".join(recognized_values[:-1])
+            + " et "
+            + recognized_values[-1]
+        )
+
+    return (
+        "Tu soulèves des valeurs très importantes, mon ami ! ❤️ "
+        "Pour toi, une vraie amitié repose notamment sur "
+        + joined_values
+        + ". Ces valeurs aident à construire une relation "
+        "sincère dans laquelle chacun peut se sentir écouté, "
+        "respecté et soutenu. 🤝\n\n"
+        "Selon toi, comment reconnaît-on un véritable ami "
+        "lorsqu'on traverse une période difficile ?"
+    )
 def remember_topic(message):
     """Enregistre le sujet principal de la discussion."""
     normalized = normalize_text(message)
@@ -749,7 +808,12 @@ def chat_api():
     }:
         reply = get_creator_response()
         return jsonify({"reply": reply})
-    # 4. Essaie de comprendre un message lié au contexte.
+    # 4. Comprend les réponses qui suivent une question.
+    followup_reply = get_followup_response(message)
+    if followup_reply:
+        remember_topic(message)
+        return jsonify({"reply": followup_reply})
+    # 5. Essaie de comprendre un message lié au contexte.
     contextual_reply = get_contextual_response(message)
     if contextual_reply:
         return jsonify({"reply": contextual_reply})
