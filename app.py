@@ -359,8 +359,9 @@ def get_topic_response(message):
             "confiance en toi ?"
         )
 
-           # bibliothèque de connaissances.
-             topic_routes = [
+    # Relie les sujets aux formulations présentes
+    # dans la bibliothèque de connaissances.
+    topic_routes = [
         (
             {"amitie", "ami", "amis", "amie"},
             "parlons de l'amitie"
@@ -394,7 +395,7 @@ def get_topic_response(message):
             "raconte-moi une leçon de vie"
         ),
         (
-            {"discipline", "discipline", "disciplinee", "discipliner"},
+            {"discipline", "disciplinee", "discipliner"},
             "parle-moi de discipline"
         ),
         (
@@ -416,8 +417,7 @@ def get_topic_response(message):
         (
             {"histoire", "histoires", "inspirante", "inspirantes"},
             "raconte une histoire inspirante"
-            
-        )    
+        )
     ]
 
     for topic_words, canonical_question in topic_routes:
@@ -429,58 +429,3 @@ def get_topic_response(message):
                     return response
 
     return None
-
-
-@app.route("/")
-def home():
-    return render_template("index.html")
-
-
-@app.route("/api/chat", methods=["POST"])
-def chat():
-    data = request.get_json(silent=True) or {}
-
-    message = str(data.get("message", "")).strip()
-    normalized = normalize_text(message)
-
-    if not normalized:
-        return jsonify({
-            "reply": (
-                "Écris-moi un petit message pour que "
-                "nous puissions commencer. ❤️"
-            ),
-            "topics": get_topics()
-        })
-
-    # Recherche d'abord une intention connue.
-    response = get_topic_response(message)
-
-    # Si aucune intention n'a été reconnue, recherche dans
-    # toute la bibliothèque de connaissances.
-    if response is None:
-        response = find_response(message)
-
-    if response is None:
-        response = fallback_response()
-
-    return jsonify({
-        "reply": response,
-        "topics": get_topics()
-    })
-
-
-@app.route("/api/topics", methods=["GET"])
-def topics():
-    return jsonify({
-        "topics": get_topics()
-    })
-
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-
-    app.run(
-        host="0.0.0.0",
-        port=port,
-        debug=False
-    )
