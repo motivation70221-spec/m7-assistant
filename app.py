@@ -567,6 +567,20 @@ def get_simple_response(message):
             "Je suis prêt à discuter avec toi ! 😊 "
             "Et toi, comment te sens-tu aujourd'hui ?"
         )
+    #  Réactions positives et appréciations.
+    if normalized in {
+        "c est cool",
+        "c est genial",
+        "c est super",
+        "super",
+        "genial",
+        "j aime bien",
+        "c est interessant"
+    }:
+        return (
+            "Content que cela te plaise, mon ami ! 😊 "
+            "Qu'est-ce qui t'a le plus plu ou fait réfléchir ?"
+        )
     if normalized in {
         "oui", "oui merci", "d accord", "ok", "okay"
     }:
@@ -635,7 +649,7 @@ def get_contextual_response(message):
 # ==========================================================
 def get_followup_response(message):
     """
-    Comprend certaines réponses qui suivent une discussion
+    Comprend les réponses qui suivent une discussion
     sur l'amitié et rebondit sur les valeurs exprimées.
     """
     normalized = normalize_text(message)
@@ -663,10 +677,12 @@ def get_followup_response(message):
         if keyword in words
     ]
 
-    if len(recognized_values) < 2:
+    if not recognized_values:
         return None
 
-    if len(recognized_values) == 2:
+    if len(recognized_values) == 1:
+        joined_values = recognized_values[0]
+    elif len(recognized_values) == 2:
         joined_values = (
             recognized_values[0]
             + " et "
@@ -680,10 +696,10 @@ def get_followup_response(message):
         )
 
     return (
-        "Tu soulèves des valeurs très importantes, mon ami ! ❤️ "
+        "Tu soulèves une valeur importante, mon ami ! ❤️ "
         "Pour toi, une vraie amitié repose notamment sur "
         + joined_values
-        + ". Ces valeurs aident à construire une relation "
+        + ". Cette valeur contribue à construire une relation "
         "sincère dans laquelle chacun peut se sentir écouté, "
         "respecté et soutenu. 🤝\n\n"
         "Selon toi, comment reconnaît-on un véritable ami "
