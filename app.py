@@ -361,7 +361,7 @@ def get_topic_response(message):
 
     # Relie les sujets aux formulations déjà présentes dans la
     # bibliothèque de connaissances.
-    topic_routes = [
+        topic_routes = [
         (
             {"amitie", "ami", "amis", "amie"},
             "parlons de l'amitie"
@@ -393,7 +393,35 @@ def get_topic_response(message):
         (
             {"lecon", "lecons", "vie"},
             "raconte-moi une leçon de vie"
-        )
+        ),
+        (
+            {"discipline", "discipline", "disciplinee", "discipliner"},
+            "parle-moi de discipline"
+        ),
+        (
+            {"amour", "aimer", "amoureux", "amoureuse", "couple"},
+            "parle-moi d'amour"
+        ),
+        (
+            {"rupture", "ex", "separation", "coeur"},
+            "comment oublier mon ex"
+        ),
+        (
+            {"solitude", "seul", "seule", "triste", "emotions"},
+            "je me sens seul"
+        ),
+        (
+            {"perseverance", "abandonner", "espoir"},
+            "perseverance"
+        ),
+        (
+            {"histoire", "histoires", "inspirante", "inspirantes"},
+            "raconte une histoire inspirante"
+            ),
+            (
+            {"❤️", "🥰", "😍", "💚"},
+            "❤️😇"
+        )    
     ]
 
     for topic_words, canonical_question in topic_routes:
