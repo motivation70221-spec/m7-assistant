@@ -361,7 +361,7 @@ def get_topic_response(message):
 
            # Relie les sujets aux formulations déjà présentes dans la
            # bibliothèque de connaissances.
-           topic_routes = [
+             topic_routes = [
         (
             {"amitie", "ami", "amis", "amie"},
             "parlons de l'amitie"
