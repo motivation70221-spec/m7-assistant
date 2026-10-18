@@ -272,50 +272,46 @@ def get_suggestion_response():
     )
 
 
+
 def get_topic_response(message):
-    """
-    Reconnaît quelques intentions fréquentes et les relie
-    aux connaissances déjà présentes dans les fichiers JSON.
-    """
-    normalized = normalize_text(message)
-    words = set(normalized.split())
+“””
+Reconnaît les intentions fréquentes et les relie
+aux connaissances présentes dans les fichiers JSON.
+“””
+normalized = normalize_text(message)
+words = set(normalized.split())
 
-    # Identité de M7 et informations sur son créateur.
-    identity_questions = {
-        "qui es tu",
-        "qui es tu m7",
-        "tu es qui",
-        "toi tu es qui",
-        "tu es quoi",
-        "quel est ton nom",
-        "comment tu t appelles",
-        "presente toi",
-        "presente toi m7",
-        "parle moi de toi",
-        "dis moi qui tu es",
-        "qui etes vous",
-        "qui t a cree",
-        "qui est ton createur",
-        "qui est derriere m7",
-        "c est quoi m7"
-    }
-
-    if normalized in identity_questions:
-        return find_response("qui es tu")
-
-    if normalized == "m7":
-        return find_response("qui es tu")
-
-    if normalized == "cheikh":
-        return find_response("qui est cheikh")
-        
-     creator_terms = {
-        "cheikh", "createur", "cree", "creation"
-    }
-  identity_terms = {
+# Identité de M7 et questions sur son créateur.
+identity_questions = {
+    "qui es tu",
+    "qui es tu m7",
+    "tu es qui",
+    "toi tu es qui",
+    "tu es quoi",
+    "quel est ton nom",
+    "comment tu t appelles",
+    "presente toi",
+    "presente toi m7",
+    "parle moi de toi",
+    "dis moi qui tu es",
+    "qui etes vous",
+    "qui t a cree",
+    "qui est ton createur",
+    "qui est derriere m7",
+    "c est quoi m7"
+}
+if normalized in identity_questions:
+    return find_response("qui es tu")
+if normalized == "m7":
+    return find_response("qui es tu")
+if normalized == "cheikh":
+    return find_response("qui est cheikh")
+creator_terms = {
+    "cheikh", "createur", "cree", "creation"
+}
+identity_terms = {
     "qui", "identite", "presente", "nom"
 }
-
 if (
     words.intersection(creator_terms)
     and (
@@ -326,134 +322,115 @@ if (
 ):
     if "cheikh" in words or "motivation7" in words:
         return find_response("qui est cheikh")
-
-    return find_response("qui t'a créé")
-        if "cheikh" in words or "motivation7" in words:
-            return find_response("qui est cheikh")
-
-        return find_response("qui t'a créé")
-
-    # Reconnaissance des demandes de suggestions, même formulées
-    # avec des mots supplémentaires.
-    suggestion_terms = {
-        "propose", "proposes", "sujet", "sujets",
-        "interesser", "interesse", "interesserait",
-        "idee", "idees"
-    }
-
-    if (
-        words.intersection(suggestion_terms)
-        and (
-            "propose" in words
-            or "proposes" in words
-            or "sujet" in words
-            or "sujets" in words
-            or "interesser" in words
-            or "interesserait" in words
-        )
-    ):
-        return get_suggestion_response()
-
-    # Le message doit évoquer une demande de discussion,
-    # ou être simplement le nom d'un sujet.
-    request_terms = {
-        "parle", "parlons", "raconte", "explique",
-        "dis", "discussion", "parler", "parlons",
-        "aborder", "decouvrir"
-    }
-
-    is_topic_request = bool(words.intersection(request_terms))
-
-    # Confiance en soi : réponse dédiée, car ce sujet n'a pas
-    # encore sa propre réponse dans les fichiers JSON actuels.
-    confidence_terms = {
-        "confiance", "confiant", "confiante",
-        "timide", "timidite", "estime"
-    }
-
-    if words.intersection(confidence_terms) and (
-        is_topic_request or len(words) <= 4
-    ):
-        return (
-            "🌟 La confiance en soi se construit progressivement. "
-            "Tu n'as pas besoin d'être parfait pour reconnaître "
-            "ta valeur. Commence par identifier tes qualités, "
-            "avance à ton rythme et apprends à voir les erreurs "
-            "comme des occasions de progresser. ❤️\n\n"
-            "Dans quelle situation aimerais-tu avoir davantage "
-            "confiance en toi ?"
-        )
-
-    # Relie les sujets aux formulations présentes
-    # dans la bibliothèque de connaissances.
-    topic_routes = [
-        (
-            {"amitie", "ami", "amis", "amie"},
-            "parlons de l'amitie"
-        ),
-        (
-            {"motivation", "motive", "motiver", "courage"},
-            "je veux de la motivation"
-        ),
-        (
-            {"patience", "patient", "patiente"},
-            "parlons de la patience"
-        ),
-        (
-            {"respect", "respecter"},
-            "parlons du respect"
-        ),
-        (
-            {"honnetete", "honnete", "honnetes"},
-            "parlons de l'honnetete"
-        ),
-        (
-            {"pardon", "pardonner", "blessure"},
-            "parlons du pardon"
-        ),
-        (
-            {"choix", "decision", "decider"},
-            "parlons des choix"
-        ),
-        (
-            {"lecon", "lecons", "vie"},
-            "raconte-moi une leçon de vie"
-        ),
-        (
-            {"discipline", "disciplinee", "discipliner"},
-            "parle-moi de discipline"
-        ),
-        (
-            {"amour", "aimer", "amoureux", "amoureuse", "couple"},
-            "parle-moi d'amour"
-        ),
-        (
-            {"rupture", "ex", "separation", "coeur"},
-            "comment oublier mon ex"
-        ),
-        (
-            {"solitude", "seul", "seule", "triste", "emotions"},
-            "je me sens seul"
-        ),
-        (
-            {"perseverance", "abandonner", "espoir"},
-            "perseverance"
-        ),
-        (
-            {"histoire", "histoires", "inspirante", "inspirantes"},
-            "raconte une histoire inspirante"
-        )
-    ]
-
-    for topic_words, canonical_question in topic_routes:
-        if words.intersection(topic_words):
-            if is_topic_request or len(words) <= 4:
-                response = find_response(canonical_question)
-
-                if response:
-                    return response
-
-    return None
+    return find_response("qui t a cree")
+# Demandes de suggestions.
+suggestion_terms = {
+    "propose", "proposes", "sujet", "sujets",
+    "interesser", "interesse", "interesserait",
+    "idee", "idees"
+}
+if (
+    words.intersection(suggestion_terms)
+    and (
+        "propose" in words
+        or "proposes" in words
+        or "sujet" in words
+        or "sujets" in words
+        or "interesser" in words
+        or "interesserait" in words
+    )
+):
+    return get_suggestion_response()
+# Détermine si la personne demande une discussion.
+request_terms = {
+    "parle", "parlons", "raconte", "explique",
+    "dis", "discussion", "parler",
+    "aborder", "decouvrir"
+}
+is_topic_request = bool(words.intersection(request_terms))
+# Confiance en soi.
+confidence_terms = {
+    "confiance", "confiant", "confiante",
+    "timide", "timidite", "estime"
+}
+if words.intersection(confidence_terms) and (
+    is_topic_request or len(words) <= 4
+):
+    return (
+        "🌟 La confiance en soi se construit progressivement. "
+        "Tu n'as pas besoin d'être parfait pour reconnaître "
+        "ta valeur. Commence par identifier tes qualités, "
+        "avance à ton rythme et apprends à voir les erreurs "
+        "comme des occasions de progresser. ❤️\n\n"
+        "Dans quelle situation aimerais-tu avoir davantage "
+        "confiance en toi ?"
+    )
+# Relie les sujets aux réponses de la bibliothèque JSON.
+topic_routes = [
+    (
+        {"amitie", "ami", "amis", "amie"},
+        "parlons de l'amitie"
+    ),
+    (
+        {"motivation", "motive", "motiver", "courage"},
+        "je veux de la motivation"
+    ),
+    (
+        {"patience", "patient", "patiente"},
+        "parlons de la patience"
+    ),
+    (
+        {"respect", "respecter"},
+        "parlons du respect"
+    ),
+    (
+        {"honnetete", "honnete", "honnetes"},
+        "parlons de l'honnetete"
+    ),
+    (
+        {"pardon", "pardonner", "blessure"},
+        "parlons du pardon"
+    ),
+    (
+        {"choix", "decision", "decider"},
+        "parlons des choix"
+    ),
+    (
+        {"lecon", "lecons", "vie"},
+        "raconte-moi une leçon de vie"
+    ),
+    (
+        {"discipline", "disciplinee", "discipliner"},
+        "parle-moi de discipline"
+    ),
+    (
+        {"amour", "aimer", "amoureux", "amoureuse", "couple"},
+        "parle-moi d'amour"
+    ),
+    (
+        {"rupture", "ex", "separation", "coeur"},
+        "comment oublier mon ex"
+    ),
+    (
+        {"solitude", "seul", "seule", "triste", "emotions"},
+        "je me sens seul"
+    ),
+    (
+        {"perseverance", "abandonner", "espoir"},
+        "perseverance"
+    ),
+    (
+        {"histoire", "histoires", "inspirante", "inspirantes"},
+        "raconte une histoire inspirante"
+    )
+]
+for topic_words, canonical_question in topic_routes:
+    if words.intersection(topic_words):
+        if is_topic_request or len(words) <= 4:
+            response = find_response(canonical_question)
+            if response:
+                return response
+return None
  # ==========================================================
 # ROUTES FLASK — M7 ASSISTANT
 # ==========================================================
