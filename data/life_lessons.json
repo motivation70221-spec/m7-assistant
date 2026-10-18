@@ -1,77 +1,182 @@
 [
   {
     "patterns": [
-      "raconte-moi une leçon de vie",
       "raconte moi une lecon de vie",
-      "une leçon de vie",
       "une lecon de vie",
-      "donne-moi un conseil",
       "donne moi un conseil",
-      "apprends-moi quelque chose",
-      "apprends moi quelque chose"
+      "conseil de vie",
+      "comment avancer dans la vie"
     ],
-    "response": "❤️ Leçon de vie : ne juge pas une personne uniquement sur ce que tu vois. Chacun traverse des épreuves que les autres ne connaissent pas. Apprends à écouter avant de juger, à respecter les différences et à reconnaître tes propres erreurs. 🌱 Selon toi, pourquoi est-il important de ne pas juger trop vite les autres ?"
+    "response": "📖 Une leçon de vie : tu ne contrôles pas tout ce qui t'arrive, mais tu peux apprendre à choisir ta prochaine action. Avance un peu chaque jour, accepte les erreurs et demande de l'aide quand tu en as besoin. Tu n'as pas besoin d'avoir toutes les réponses aujourd'hui. ❤️\n\nDis-moi : quelle situation aimerais-tu mieux comprendre en ce moment ?"
   },
   {
     "patterns": [
-      "parlons du respect",
-      "c'est quoi le respect",
-      "c est quoi le respect",
-      "comment respecter les autres",
-      "pourquoi le respect est important"
+      "parle moi de respect",
+      "le respect",
+      "respecter les autres",
+      "manque de respect"
     ],
-    "response": "🤝 Le respect consiste à reconnaître la dignité des autres, même lorsque nous ne sommes pas d'accord avec eux. Il se manifeste par nos paroles, nos actes et notre manière d'écouter. Respecter quelqu'un ne signifie pas accepter tous ses comportements : tu peux poser des limites sans l'humilier. ❤️ Pour toi, quel comportement montre le plus de respect ?"
+    "response": "🤝 Le respect, c'est reconnaître la valeur d'une personne, même quand on n'est pas d'accord avec elle. Il ne signifie pas tout accepter : tu peux poser des limites calmement et protéger ta dignité. Le respect doit aller dans les deux sens.\n\nPour toi, quel geste montre le plus de respect ?"
   },
   {
     "patterns": [
-      "parlons de la patience",
-      "comment être patient",
-      "comment etre patient",
-      "comment garder patience",
-      "pourquoi la patience est importante"
+      "parle moi de patience",
+      "la patience",
+      "etre patient",
+      "patience et foi",
+      "apprendre a patienter"
     ],
-    "response": "🌱 La patience nous aide à traverser les difficultés sans prendre de décisions précipitées. Être patient ne signifie pas rester immobile : tu peux agir avec détermination tout en acceptant que certains résultats prennent du temps. ❤️ Dans quelle situation trouves-tu le plus difficile de rester patient ?"
+    "response": "🙏 La patience ne veut pas dire rester immobile ou accepter l'injustice. C'est continuer à faire sa part sans laisser la colère décider de tout. Tu peux espérer, agir et te reposer tout en laissant du temps aux choses qui ne dépendent pas de toi.\n\nDans quelle situation as-tu le plus besoin de patience ?"
   },
   {
     "patterns": [
-      "parlons de l'honnêteté",
-      "parlons de l honnetete",
-      "c'est quoi l'honnêteté",
-      "c est quoi l honnetete",
-      "pourquoi être honnête",
-      "pourquoi etre honnete"
+      "parle moi d honnetete",
+      "l honnetete",
+      "etre sincere",
+      "la sincerite",
+      "dire la verite"
     ],
-    "response": "💎 L'honnêteté, c'est essayer de dire la vérité et d'agir avec intégrité, même lorsque personne ne nous regarde. Elle contribue à construire la confiance. Reconnaître une erreur peut être difficile, mais c'est souvent le premier pas pour la réparer. ❤️ Pourquoi penses-tu que la confiance est parfois longue à construire et rapide à perdre ?"
+    "response": "🌿 La sincérité, c'est essayer d'accorder ses paroles et ses actes. Elle demande du courage, mais aussi de la délicatesse : dire la vérité ne donne pas le droit de blesser gratuitement. La confiance se construit par de petites preuves répétées.\n\nQu'est-ce qui te fait reconnaître une personne sincère ?"
   },
   {
     "patterns": [
-      "parlons de l'amitié",
-      "c'est quoi un vrai ami",
-      "c est quoi un vrai ami",
-      "comment reconnaître un vrai ami",
-      "comment reconnaitre un vrai ami",
-      "comment choisir ses amis"
+      "parle moi d amitie",
+      "l amitie",
+      "un ami sincere",
+      "une vraie amitie",
+      "les vrais amis"
     ],
-    "response": "🤝 Une véritable amitié repose sur la confiance, le respect, la sincérité et le soutien réciproque. Un bon ami ne doit pas forcément être d'accord avec toi tout le temps, mais il peut te parler honnêtement sans chercher à t'humilier. Une amitié saine respecte aussi tes limites. ❤️ Pour toi, quelle est la qualité la plus importante chez un ami ?"
+    "response": "🤝 Une amitié sincère ne se mesure pas seulement aux bons moments. Un vrai ami essaie de t'écouter, respecte tes limites et ne se réjouit pas de tes difficultés. Il peut aussi te dire la vérité avec bienveillance. Personne n'est parfait : l'amitié demande des efforts des deux côtés.\n\nPour toi, quel est le signe le plus important d'une vraie amitié ?"
   },
   {
     "patterns": [
-      "parlons des choix",
-      "comment faire les bons choix",
-      "comment prendre une décision",
-      "j'ai une décision à prendre",
-      "j'ai une decision a prendre"
+      "comment faire un choix",
+      "prendre une decision",
+      "les choix de la vie",
+      "j hesite entre deux choix"
     ],
-    "response": "🧠 Nos choix peuvent avoir des conséquences sur notre avenir. Avant une décision importante, prends le temps de comprendre la situation, de comparer les possibilités et de réfléchir aux conséquences à court et à long terme. Si nécessaire, demande conseil à une personne de confiance. ❤️ Quelle décision essaies-tu de prendre ? Nous pouvons réfléchir ensemble aux différentes possibilités."
+    "response": "🧭 Quand tu dois choisir, essaie de distinguer ce que tu sais, ce que tu supposes et ce que tu ressens. Pense aux conséquences à court et à long terme, demande conseil à une personne fiable, puis choisis selon tes valeurs. Certaines décisions peuvent être corrigées plus tard.\n\nQuel choix te préoccupe en ce moment ?"
   },
   {
     "patterns": [
-      "parlons du pardon",
       "comment pardonner",
-      "dois-je pardonner",
-      "dois je pardonner",
-      "comment oublier une blessure"
+      "le pardon",
+      "pardonner quelqu un",
+      "j ai du mal a pardonner"
     ],
-    "response": "❤️ Le pardon est un chemin personnel. Il peut aider à avancer, mais il ne signifie pas que ce qui s'est passé était acceptable. Pardonner ne t'oblige pas à oublier, à rétablir une relation ou à tolérer de nouveaux comportements blessants. Tu peux prendre du temps et poser des limites pour te protéger. 🌱 Qu'est-ce qui te fait réfléchir au pardon aujourd'hui ?"
+    "response": "🕊️ Pardonner peut prendre du temps. Cela ne signifie pas nier ce qui s'est passé, oublier de force ou laisser quelqu'un te blesser à nouveau. Tu peux chercher la paix intérieure tout en gardant des limites claires. La confiance, elle, se reconstruit avec des actes.\n\nEst-ce difficile pour toi de pardonner, ou plutôt de refaire confiance ?"
+  },
+  {
+    "patterns": [
+      "parle moi d amour",
+      "l amour",
+      "amour sincere",
+      "c est quoi le vrai amour",
+      "aimer quelqu un",
+      "une relation amoureuse"
+    ],
+    "response": "❤️ Un amour sincère ne se limite pas aux belles paroles. Il se montre par le respect, l'écoute, la cohérence et la volonté de résoudre les désaccords sans humiliation ni menace. Aimer quelqu'un ne veut pas dire s'oublier : chacun doit pouvoir garder sa dignité, ses amis et ses projets.\n\nPour toi, qu'est-ce qui prouve qu'une personne aime vraiment ?"
+  },
+  {
+    "patterns": [
+      "comment oublier mon ex",
+      "oublier quelqu un",
+      "surmonter une rupture",
+      "j ai le coeur brise",
+      "souffrir apres une rupture",
+      "se remettre d une separation"
+    ],
+    "response": "💔 Après une rupture, il est normal de ressentir de la tristesse, de la colère ou de la confusion. Ne te force pas à aller bien immédiatement. Essaie de dormir et de manger régulièrement, de parler à une personne de confiance et de limiter les contacts qui ravivent constamment la douleur. Tu peux garder les leçons de cette relation sans rester prisonnier du passé.\n\nQu'est-ce qui te fait le plus mal aujourd'hui : le manque, la déception ou les questions sans réponse ?"
+  },
+  {
+    "patterns": [
+      "on m a trahi",
+      "j ai ete trompe",
+      "trahison amoureuse",
+      "comment refaire confiance",
+      "j ai perdu confiance en amour"
+    ],
+    "response": "💔 La trahison peut ébranler la confiance en l'autre et en soi. La décision de rester ou de partir dépend de la situation, de ta sécurité, de tes limites et des actes réels de l'autre personne. Tu n'es pas obligé de pardonner immédiatement ni de reprendre la relation. Prends le temps de comprendre ce dont tu as besoin.\n\nVeux-tu parler de ce qui s'est passé ou chercher des étapes pour retrouver confiance en toi ?"
+  },
+  {
+    "patterns": [
+      "relation saine",
+      "amour sain",
+      "signes d une relation toxique",
+      "relation toxique",
+      "comment construire un couple solide"
+    ],
+    "response": "🌱 Une relation saine permet à chacun de parler librement, de dire non, de conserver ses liens sociaux et de se sentir en sécurité. Les désaccords existent, mais les insultes, le contrôle, les menaces et la peur ne sont pas des preuves d'amour. Une relation solide se construit avec le respect, la responsabilité et des efforts partagés.\n\nDans une relation, quelle limite est essentielle pour toi ?"
+  },
+  {
+    "patterns": [
+      "parle moi de discipline",
+      "la discipline",
+      "etre discipline",
+      "arreter de procrastiner",
+      "manque de motivation pour agir"
+    ],
+    "response": "💪 La discipline, c'est rendre une bonne action plus facile à répéter, même quand la motivation baisse. Choisis un objectif clair, réduis-le à une petite étape quotidienne et prépare ton environnement. Dix minutes régulières peuvent être plus utiles qu'un grand effort abandonné après deux jours.\n\nQuelle habitude aimerais-tu installer cette semaine ?"
+  },
+  {
+    "patterns": [
+      "confiance en soi",
+      "je manque de confiance",
+      "je ne crois pas en moi",
+      "comment croire en moi",
+      "peur d echouer"
+    ],
+    "response": "✨ La confiance en soi ne signifie pas être sûr de réussir à chaque fois. Elle grandit quand tu apprends, que tu essaies et que tu constates que tu peux faire face aux difficultés. Commence par une action petite mais réelle, et parle-toi comme tu parlerais à un ami que tu encourages.\n\nDans quel domaine aimerais-tu avoir davantage confiance en toi ?"
+  },
+  {
+    "patterns": [
+      "je me sens seul",
+      "la solitude",
+      "je suis triste",
+      "je me sens perdu",
+      "je ne vais pas bien",
+      "j ai trop d emotions"
+    ],
+    "response": "❤️ Je suis désolé que tu traverses un moment difficile. Tu n'as pas besoin de tout expliquer parfaitement pour en parler. Essaie de nommer ce que tu ressens et, si possible, contacte une personne de confiance. Je peux t'écouter et réfléchir avec toi, même si je ne remplace pas le soutien d'une personne présente dans ta vie.\n\nQu'est-ce qui pèse le plus sur ton cœur en ce moment ?"
+  },
+  {
+    "patterns": [
+      "perseverance",
+      "ne pas abandonner",
+      "continuer malgre les difficultes",
+      "je veux abandonner",
+      "garder espoir"
+    ],
+    "response": "🌤️ Persévérer ne veut pas dire s'épuiser à tout prix. Cela peut aussi signifier faire une pause, demander de l'aide, changer de méthode et reprendre avec un plan plus réaliste. Un échec donne une information sur ce qui n'a pas fonctionné ; il ne résume pas ta valeur.\n\nQuel objectif veux-tu encore essayer d'atteindre ?"
+  },
+  {
+    "patterns": [
+      "raconte une histoire d amour",
+      "histoire d amour triste",
+      "une histoire romantique",
+      "histoire de coeur brise",
+      "histoire de rupture"
+    ],
+    "response": "📖 **Le dernier message de Mariama**\n\nMariama et Ibrahima s'étaient rencontrés à une fête de quartier. Ibrahima aimait faire rire Mariama ; elle, elle l'encourageait quand il doutait de lui. Pendant quelque temps, ils se parlaient chaque soir et partageaient leurs projets.\n\nUn jour, les réponses d'Ibrahima devinrent rares. Mariama lui demanda :\n— « Est-ce que quelque chose a changé entre nous ? »\nIl répondit après un long silence :\n— « Je ne sais plus si je veux continuer. Je suis désolé de te faire souffrir. »\n\nMariama relut le message plusieurs fois. Elle aurait voulu une autre réponse, mais elle comprit qu'elle ne pouvait pas décider à sa place. Elle écrivit :\n— « J'aurais préféré que tu m'en parles plus tôt. Je suis triste, mais je vais respecter ta décision et prendre soin de moi. »\n\nLes premiers jours furent difficiles. Elle eut envie de lui écrire encore, puis choisit de parler à sa cousine, de reprendre ses promenades et de se consacrer à un projet qu'elle avait laissé de côté. Petit à petit, elle retrouva son calme. Elle ne cessa pas d'aimer les beaux souvenirs, mais elle arrêta d'attendre un message pour recommencer à vivre.\n\n**Leçon :** une séparation peut faire mal sans détruire ta valeur. Tu ne peux pas forcer quelqu'un à rester, mais tu peux choisir de te traiter avec respect et de demander du soutien.\n\nEt toi, qu'est-ce qui aide une personne à se reconstruire après une rupture ?"
+  },
+  {
+    "patterns": [
+      "raconte une histoire inspirante",
+      "histoire inspirante",
+      "une histoire de motivation",
+      "raconte une histoire de courage",
+      "histoire de reussite"
+    ],
+    "response": "📖 **Le rêve de Moussa**\n\nMoussa rêvait de créer une petite activité, mais il pensait ne pas avoir les capacités nécessaires. Chaque fois qu'il voyait quelqu'un réussir, il se disait : « Moi, je suis en retard. »\n\nUn soir, sa tante lui demanda :\n— « Quel est le premier pas que tu pourrais faire sans attendre d'être prêt à cent pour cent ? »\nMoussa réfléchit, puis répondit :\n— « Je pourrais apprendre une compétence et demander conseil à quelqu'un qui connaît déjà ce métier. »\n\nLe lendemain, il se renseigna. Il fit des erreurs, recommença et nota ce qu'il apprenait. Les progrès furent lents, mais il devint plus compétent. Quand un premier essai échoua, il demanda ce qu'il pouvait améliorer au lieu de conclure qu'il était incapable.\n\nQuelques mois plus tard, son projet n'était pas encore parfait, mais il avait acquis des connaissances et trouvé ses premiers clients. Il comprit que le courage n'était pas l'absence de peur : c'était avancer malgré elle, avec prudence et persévérance.\n\n**Leçon :** tu n'as pas besoin de tout maîtriser pour commencer. Apprends, fais un petit pas, demande conseil et ajuste ton plan.\n\nQuel petit pas pourrais-tu faire pour ton propre rêve ?"
+  },
+  {
+    "patterns": [
+      "histoire d amitie",
+      "raconte une histoire d ami",
+      "histoire d un ami sincere",
+      "un ami qui reste",
+      "histoire sur l amitie"
+    ],
+    "response": "📖 **L'ami qui est resté**\n\nQuand Amadou perdit son travail, il évita peu à peu ses amis. Il avait honte de ne plus pouvoir participer aux sorties et craignait qu'on le juge. Son ami Boubacar remarqua son silence et lui envoya un message : « Je ne viens pas pour te demander ce que tu peux m'offrir. Je veux simplement savoir comment tu vas. »\n\nAmadou finit par lui raconter ses inquiétudes. Boubacar l'écouta sans se moquer et lui demanda :\n— « Tu veux que je t'écoute aujourd'hui, ou veux-tu qu'on cherche des solutions ensemble ? »\nAmadou sourit :\n— « Pour commencer, écoute-moi. Après, on réfléchira. »\n\nIls parlèrent longtemps. Les jours suivants, Boubacar aida Amadou à mettre son CV à jour et à repérer des possibilités. Il ne pouvait pas régler tous ses problèmes, mais il resta présent sans lui faire sentir qu'il lui devait quelque chose.\n\nAvec le temps, Amadou retrouva une activité. Il n'oublia jamais que son ami avait respecté sa dignité au moment où il se sentait le plus fragile. Lui aussi apprit à être présent pour les autres, sans attendre qu'ils aient quelque chose à lui donner.\n\n**Leçon :** une amitié sincère se montre par l'écoute, le respect et des gestes concrets. Un ami ne peut pas résoudre tous tes problèmes, mais il peut t'aider à ne pas les porter seul.\n\nPour toi, qu'est-ce qui distingue un ami sincère d'une simple connaissance ?"
   }
 ]
