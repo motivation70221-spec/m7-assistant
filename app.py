@@ -312,18 +312,22 @@ def get_topic_response(message):
      creator_terms = {
         "cheikh", "createur", "cree", "creation"
     }
-     identity_terms = {
-        "qui", "identite", "presente", "nom"
-    }
+  identity_terms = {
+    "qui", "identite", "presente", "nom"
+}
 
-    if (
-        words.intersection(creator_terms)
-        and (
-            words.intersection(identity_terms)
-            or "parle" in words
-            or "raconte" in words
-        )
-    ):
+if (
+    words.intersection(creator_terms)
+    and (
+        words.intersection(identity_terms)
+        or "parle" in words
+        or "raconte" in words
+    )
+):
+    if "cheikh" in words or "motivation7" in words:
+        return find_response("qui est cheikh")
+
+    return find_response("qui t'a créé")
         if "cheikh" in words or "motivation7" in words:
             return find_response("qui est cheikh")
 
