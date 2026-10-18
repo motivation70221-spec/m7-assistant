@@ -312,7 +312,7 @@ def get_topic_response(message):
      creator_terms = {
         "cheikh", "createur", "cree", "creation"
     }
-    identity_terms = {
+     identity_terms = {
         "qui", "identite", "presente", "nom"
     }
 
