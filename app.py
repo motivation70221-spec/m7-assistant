@@ -280,16 +280,34 @@ def get_topic_response(message):
     normalized = normalize_text(message)
     words = set(normalized.split())
 
-    # Demande d'informations sur M7 ou son créateur.
-    if normalized in {"m7", "cheikh"}:
-        if normalized == "m7":
-            return find_response("qui es tu")
-
-        return find_response("qui est cheikh")
-
-    creator_terms = {
-        "cheikh", "createur", "cree", "creation"
+    # Identité de M7 et informations sur son créateur.
+    identity_questions = {
+        "qui es tu",
+        "qui es tu m7",
+        "tu es qui",
+        "toi tu es qui",
+        "tu es quoi",
+        "quel est ton nom",
+        "comment tu t appelles",
+        "presente toi",
+        "presente toi m7",
+        "parle moi de toi",
+        "dis moi qui tu es",
+        "qui etes vous",
+        "qui t a cree",
+        "qui est ton createur",
+        "qui est derriere m7",
+        "c est quoi m7"
     }
+
+    if normalized in identity_questions:
+        return find_response("qui es tu")
+
+    if normalized == "m7":
+        return find_response("qui es tu")
+
+    if normalized == "cheikh":
+        return find_response("qui est cheikh")
 
     identity_terms = {
         "qui", "identite", "presente", "nom"
