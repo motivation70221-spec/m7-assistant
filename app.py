@@ -1193,41 +1193,30 @@ def home():
 # ==========================================================
 @app.route("/api/chat", methods=["POST"])
 def chat_api():
-    """Reçoit un message et renvoie une réponse."""
+    """Reçoit un message et conserve le fil du dialogue."""
     data = request.get_json(silent=True) or {}
     message = data.get("message", "")
-
     if not isinstance(message, str):
         return jsonify({
-            "reply": (
-                "Envoie-moi un message écrit, "
-                "s'il te plaît. ❤️"
-            )
+            "reply": "Envoie-moi un message écrit, s'il te plaît. ❤️"
         }), 400
-
     message = message.strip()
-
     if not message:
-        return jsonify({
-            "reply": (
-                "Je suis là, mon ami. ❤️ "
-                "Écris-moi ce que tu souhaites partager."
-            )
-        })
-
-    # 1. Gestion des histoires M7 en épisodes.
+        return create_chat_response(
+            "Je suis là, mon ami. ❤️ "
+            "Écris-moi ce que tu souhaites partager."
+        )
+    # 1. Gérer les histoires M7.
     story_reply = get_story_response(message)
     if story_reply:
-        return jsonify({"reply": story_reply})
-
-    # 2. Reconnaissance des emojis envoyés seuls.
+        return create_chat_response(story_reply, message)
+    # 2. Reconnaître les emojis.
     emoji_reply = get_emoji_response(message)
     if emoji_reply:
-        return jsonify({"reply": emoji_reply})
-
-    # 3. Réponses sur l'identité et le créateur.
+        return create_chat_response(emoji_reply, message)
+    # 3. Normaliser le message.
     normalized = normalize_text(message)
-
+    # 4. Répondre aux questions sur l'identité de M7.
     if normalized in {
         "qui es tu",
         "qui es tu m7",
@@ -1237,46 +1226,52 @@ def chat_api():
         "presente toi",
         "parle moi de toi"
     }:
-        return jsonify({"reply": get_identity_response()})
-
+        return create_chat_response(
+            get_identity_response(),
+            message
+        )
+    # 5. Répondre aux questions sur le créateur.
     if normalized in {
         "qui t a cree",
         "qui est ton createur",
         "qui est derriere m7",
         "qui est cheikh"
     }:
-        return jsonify({"reply": get_creator_response()})
-
-    # 4. Comprendre les réponses qui suivent une question.
+        return create_chat_response(
+            get_creator_response(),
+            message
+        )
+    # 6. Comprendre les idées exprimées dans la discussion.
     followup_reply = get_followup_response(message)
     if followup_reply:
-        return jsonify({"reply": followup_reply})
-
-    # 5. Analyser le contexte de la conversation.
+        return create_chat_response(
+            followup_reply,
+            message
+        )
+    # 7. Utiliser le contexte de la conversation.
     contextual_reply = get_contextual_response(message)
     if contextual_reply:
-        return jsonify({"reply": contextual_reply})
-
-    # 6. Salutations et petits messages.
+        return create_chat_response(
+            contextual_reply,
+            message
+        )
+    # 8. Gérer les salutations et les messages courants.
     simple_reply = get_simple_response(message)
     if simple_reply:
-        return jsonify({"reply": simple_reply})
-
-    # 7. Chercher une réponse liée au sujet.
+        return create_chat_response(
+            simple_reply,
+            message
+        )
+    # 9. Chercher une réponse liée au sujet.
     reply = get_topic_response(message)
-
-    # 8. Dernière recherche dans la bibliothèque.
+    # 10. Chercher dans la bibliothèque de connaissances.
     if not reply:
         reply = find_response(message)
-
-    # 9. Si aucune réponse n'est disponible.
+    # 11. Répondre si aucune connaissance ne correspond.
     if not reply:
         reply = fallback_response()
-
-    # 10. Mémoriser le sujet pour la prochaine réponse.
-    remember_topic(message)
-
-    return jsonify({"reply": reply})
+    # 12. Préparer la réponse et mémoriser le dialogue.
+    return create_chat_response(reply, message)
 # ==========================================================
 # VÉRIFICATION DU SERVEUR
 # ==========================================================
