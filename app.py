@@ -8,6 +8,26 @@ from difflib import SequenceMatcher
 # CONFIGURATION DE M7
 # ==========================================================
 app = Flask(__name__)
+def remember_bot_question(reply):
+    """
+    Mémorise la dernière question posée par M7
+    pour mieux comprendre la réponse suivante.
+    """
+    if not isinstance(reply, str):
+        return
+    questions = [
+        question.strip()
+        for question in reply.split("?")
+        if question.strip()
+    ]
+    if not questions:
+        session.pop("last_bot_question", None)
+        return
+    last_question = questions[-1]
+    # Ne mémoriser que le texte correspondant
+    # à la dernière question de M7.
+    if len(last_question) <= 300:
+        session["last_bot_question"] = last_question + "?"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 # En production, définir SECRET_KEY dans les variables
