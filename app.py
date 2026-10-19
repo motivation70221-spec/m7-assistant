@@ -1037,6 +1037,7 @@ def home():
         "Vérifie son emplacement dans le dépôt GitHub.",
         404
     )
+
 # ==========================================================
 # API DE DISCUSSION
 # ==========================================================
@@ -1045,6 +1046,7 @@ def chat_api():
     """Reçoit un message et renvoie une réponse."""
     data = request.get_json(silent=True) or {}
     message = data.get("message", "")
+
     if not isinstance(message, str):
         return jsonify({
             "reply": (
@@ -1052,7 +1054,9 @@ def chat_api():
                 "s'il te plaît. ❤️"
             )
         }), 400
+
     message = message.strip()
+
     if not message:
         return jsonify({
             "reply": (
@@ -1060,20 +1064,20 @@ def chat_api():
                 "Écris-moi ce que tu souhaites partager."
             )
         })
-    # 0. Gestion des histoires M7 en épisodes.
+
+    # 1. Gestion des histoires M7 en épisodes.
     story_reply = get_story_response(message)
     if story_reply:
         return jsonify({"reply": story_reply})
-    # 1. Reconnaissance des emojis envoyés seuls.
+
+    # 2. Reconnaissance des emojis envoyés seuls.
     emoji_reply = get_emoji_response(message)
     if emoji_reply:
         return jsonify({"reply": emoji_reply})
-    # 2. Salutations et petits messages.
-    simple_reply = get_simple_response(message)
-    if simple_reply:
-        return jsonify({"reply": simple_reply})
+
     # 3. Réponses sur l'identité et le créateur.
     normalized = normalize_text(message)
+
     if normalized in {
         "qui es tu",
         "qui es tu m7",
@@ -1083,35 +1087,45 @@ def chat_api():
         "presente toi",
         "parle moi de toi"
     }:
-        reply = get_identity_response()
-        return jsonify({"reply": reply})
+        return jsonify({"reply": get_identity_response()})
+
     if normalized in {
         "qui t a cree",
         "qui est ton createur",
         "qui est derriere m7",
         "qui est cheikh"
     }:
-        reply = get_creator_response()
-        return jsonify({"reply": reply})
-    # 4. Comprend les réponses qui suivent une question.
+        return jsonify({"reply": get_creator_response()})
+
+    # 4. Comprendre les réponses qui suivent une question.
     followup_reply = get_followup_response(message)
     if followup_reply:
-        remember_topic(message)
         return jsonify({"reply": followup_reply})
-    # 5. Essaie de comprendre un message lié au contexte.
+
+    # 5. Analyser le contexte de la conversation.
     contextual_reply = get_contextual_response(message)
     if contextual_reply:
         return jsonify({"reply": contextual_reply})
-    # 5. Cherche une réponse liée au sujet.
+
+    # 6. Salutations et petits messages.
+    simple_reply = get_simple_response(message)
+    if simple_reply:
+        return jsonify({"reply": simple_reply})
+
+    # 7. Chercher une réponse liée au sujet.
     reply = get_topic_response(message)
-    # 6. Dernière recherche dans la bibliothèque.
+
+    # 8. Dernière recherche dans la bibliothèque.
     if not reply:
         reply = find_response(message)
-    # 7. Si aucune réponse n'est disponible.
+
+    # 9. Si aucune réponse n'est disponible.
     if not reply:
         reply = fallback_response()
-    # 8. Mémorise le sujet pour la prochaine réponse.
+
+    # 10. Mémoriser le sujet pour la prochaine réponse.
     remember_topic(message)
+
     return jsonify({"reply": reply})
 # ==========================================================
 # VÉRIFICATION DU SERVEUR
