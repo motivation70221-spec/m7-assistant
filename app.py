@@ -745,66 +745,177 @@ def get_contextual_response(message):
 
     return None
 # ==========================================================
-# COMPRENDRE LES RÉPONSES QUI SUIVENT UNE QUESTION
+# COMPRENDRE LES RÉPONSES DANS LA CONVERSATION
 # ==========================================================
 def get_followup_response(message):
     """
-    Comprend les réponses qui suivent une discussion
-    sur l'amitié et rebondit sur les valeurs exprimées.
+    Analyse les idées exprimées par l'utilisateur
+    en tenant compte du sujet de la conversation.
     """
     normalized = normalize_text(message)
     words = set(normalized.split())
 
     last_topic = session.get("last_topic")
 
-    if last_topic != "amitie":
+    if not last_topic:
         return None
 
-    values = {
-        "respect": "le respect",
-        "ecoute": "l'écoute",
-        "bienveillance": "la bienveillance",
-        "sincerite": "la sincérité",
-        "confiance": "la confiance",
-        "soutien": "le soutien",
-        "fidelite": "la fidélité",
-        "honnetete": "l'honnêteté"
+    # Les idées et expressions associées à l'amitié.
+    friendship_ideas = {
+        "aide": {
+            "aide", "aider", "aides", "aident",
+            "aidera", "aiderai", "aiderais",
+            "soutien", "soutient", "soutenir",
+            "secours", "assister", "accompagner",
+            "accompagne", "conseille", "conseil",
+            "conseiller", "protege", "proteger",
+            "ecoute", "ecouter", "presente",
+            "fidele", "fidelite", "abandonne",
+            "abandonner", "reste", "cote"
+        },
+        "respect": {
+            "respect", "respecte", "respecter",
+            "honnete", "honnetete", "sincerite",
+            "sincere", "confiance", "loyaute",
+            "fidelite", "fidele"
+        },
+        "ecoute": {
+            "ecoute", "ecouter", "comprend",
+            "comprendre", "parle", "conseille",
+            "conseil", "attention", "presence"
+        }
     }
 
-    recognized_values = [
-        description
-        for keyword, description in values.items()
-        if keyword in words
-    ]
+    # Comprendre différentes façons de parler de l'amitié.
+    if last_topic == "amitie":
+        matched_ideas = []
 
-    if not recognized_values:
-        return None
+        for idea, keywords in friendship_ideas.items():
+            if words.intersection(keywords):
+                matched_ideas.append(idea)
 
-    if len(recognized_values) == 1:
-        joined_values = recognized_values[0]
-    elif len(recognized_values) == 2:
-        joined_values = (
-            recognized_values[0]
-            + " et "
-            + recognized_values[1]
-        )
-    else:
-        joined_values = (
-            ", ".join(recognized_values[:-1])
-            + " et "
-            + recognized_values[-1]
-        )
+        if "aide" in matched_ideas:
+            return (
+                "Tu as raison, mon ami ! ❤️ "
+                "Aider quelqu'un dans les moments difficiles "
+                "peut être une belle preuve d'amitié. "
+                "Cette aide peut prendre plusieurs formes : "
+                "donner un conseil, écouter, accompagner "
+                "ou chercher une solution ensemble. 🤝\n\n"
+                "Selon toi, un véritable ami doit-il "
+                "toujours résoudre nos problèmes, ou parfois "
+                "simplement nous écouter ?"
+            )
 
-    return (
-        "Tu soulèves une valeur importante, mon ami ! ❤️ "
-        "Pour toi, une vraie amitié repose notamment sur "
-        + joined_values
-        + ". Cette valeur contribue à construire une relation "
-        "sincère dans laquelle chacun peut se sentir écouté, "
-        "respecté et soutenu. 🤝\n\n"
-        "Selon toi, comment reconnaît-on un véritable ami "
-        "lorsqu'on traverse une période difficile ?"
-    )
+        if "respect" in matched_ideas:
+            return (
+                "C'est une valeur importante ! ❤️ "
+                "Le respect et la sincérité permettent "
+                "de construire une amitié dans laquelle "
+                "chacun peut se sentir considéré.\n\n"
+                "Comment montrerais-tu à un ami que "
+                "tu le respectes, même lorsque vous "
+                "n'êtes pas d'accord ?"
+            )
+
+        if "ecoute" in matched_ideas:
+            return (
+                "Exactement, mon ami ! ❤️ "
+                "Savoir écouter permet à un ami de se sentir "
+                "compris et soutenu. Parfois, une personne "
+                "a surtout besoin de pouvoir parler sans "
+                "être jugée.\n\n"
+                "Penses-tu qu'il soit possible d'aider "
+                "un ami simplement en l'écoutant ?"
+            )
+
+    # Reconnaître des réponses sur les relations amoureuses.
+    if last_topic == "amour":
+        love_keywords = {
+            "respect", "sincere", "sincerite",
+            "fidele", "fidelite", "confiance",
+            "ecoute", "dialogue", "honnête",
+            "honnete", "comprendre", "compris",
+            "aime", "aimer", "amour", "soutien"
+        }
+
+        if words.intersection(love_keywords):
+            return (
+                "Tu évoques un élément important "
+                "dans une relation saine. ❤️ "
+                "Le respect, la confiance, la fidélité "
+                "et le dialogue peuvent aider deux personnes "
+                "à mieux se comprendre.\n\n"
+                "Selon toi, comment peut-on reconstruire "
+                "la confiance lorsqu'elle a été blessée ?"
+            )
+
+    # Reconnaître les réponses liées à la motivation.
+    if last_topic == "motivation":
+        motivation_keywords = {
+            "objectif", "reussir", "reussite",
+            "courage", "effort", "efforts",
+            "travail", "perserver", "perseverer",
+            "abandonner", "continuer", "avancer",
+            "discipline", "patience", "espoir"
+        }
+
+        if words.intersection(motivation_keywords):
+            return (
+                "C'est une idée intéressante, mon ami ! 💪 "
+                "Pour atteindre un objectif, il faut souvent "
+                "associer la motivation à de petits efforts "
+                "réguliers. Les progrès peuvent être lents, "
+                "mais chaque étape compte.\n\n"
+                "Quel petit pas pourrais-tu faire dès "
+                "aujourd'hui pour avancer vers ton objectif ?"
+            )
+
+    # Reconnaître les réponses sur la confiance en soi.
+    if last_topic == "confiance":
+        confidence_keywords = {
+            "peur", "timide", "timidite",
+            "courage", "oser", "erreur",
+            "erreurs", "qualite", "qualites",
+            "capacite", "capacites", "confiance",
+            "progresser", "apprendre"
+        }
+
+        if words.intersection(confidence_keywords):
+            return (
+                "Je comprends ton idée. 🌟 "
+                "La confiance en soi se développe avec "
+                "l'expérience. On peut apprendre à reconnaître "
+                "ses qualités et à progresser sans exiger "
+                "de soi la perfection.\n\n"
+                "Quelle situation aimerais-tu apprendre "
+                "à affronter avec plus de confiance ?"
+            )
+
+    # Reconnaître les réponses sur la patience.
+    if last_topic == "patience":
+        patience_keywords = {
+            "attendre", "attente", "temps",
+            "difficile", "difficiles", "epreuve",
+            "epreuves", "calme", "calmer",
+            "espoir", "foi", "patient",
+            "patience", "perserver", "perseverer"
+        }
+
+        if words.intersection(patience_keywords):
+            return (
+                "Tu soulèves un point important. 🙏 "
+                "La patience ne signifie pas rester sans rien "
+                "faire : elle peut aussi consister à continuer "
+                "ses efforts tout en acceptant que certains "
+                "résultats prennent du temps.\n\n"
+                "Qu'est-ce qui t'aide à garder espoir "
+                "lorsqu'une situation devient difficile ?"
+            )
+
+    # Si l'idée n'est pas reconnue, laisser les autres
+    # fonctions de M7 chercher une réponse.
+    return None
 def remember_topic(message):
     """Enregistre le sujet principal de la discussion."""
     normalized = normalize_text(message)
