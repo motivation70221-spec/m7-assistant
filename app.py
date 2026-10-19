@@ -810,137 +810,120 @@ def format_story_episode(story, episode):
         + "Tu peux discuter avec M7 de cette leçon de vie."
     )
 def get_story_response(message):
-    """Gère le début, la suite et le changement d'histoire."""
+“”“Gère le début, la suite et le changement d’histoire.”””
 
-    normalized = normalize_text(message)
-
- continue_messages = {
-“continue”,
-“encore”,
-“suivant”,
-“la suite”,
-“continue stp”,
-“continue l histoire”,
-“raconte la suite”,
-“episode suivant”,
-“episode 2”,
-“episode 3”
+normalized = normalize_text(message)
+continue_messages = {
+    "continue",
+    "encore",
+    "suivant",
+    "la suite",
+    "continue stp",
+    "continue l histoire",
+    "raconte la suite",
+    "episode suivant",
+    "episode 2",
+    "episode 3"
 }
-
-    another_story_messages = {
-        "une autre",
-        "une autre histoire",
-        "autre histoire",
-        "raconte une autre histoire",
-        "je veux une autre histoire",
-        "histoire suivante"
-    }
-
-    story_requests = {
-        "histoire m7",
-        "raconte une histoire",
-        "raconte moi une histoire",
-        "raconte moi une histoire m7",
-        "rencontre moi une histoire",
-        "une histoire",
-        "histoires m7"
-    }
-
-    stories = load_stories()
-
-    if not stories:
-        if (
-            normalized in continue_messages
-            or normalized in another_story_messages
-            or normalized in story_requests
-        ):
-            return (
-                "Je voudrais te raconter une histoire, mon ami ! ❤️ "
-                "Mais je n'arrive pas à charger ma bibliothèque "
-                "d'histoires pour le moment."
-            )
-        return None
-
-    current_id = session.get("current_story_id")
-
-    current_story = next(
+another_story_messages = {
+    "une autre",
+    "une autre histoire",
+    "autre histoire",
+    "raconte une autre histoire",
+    "je veux une autre histoire",
+    "histoire suivante"
+}
+story_requests = {
+    "histoire m7",
+    "raconte une histoire",
+    "raconte moi une histoire",
+    "raconte moi une histoire m7",
+    "rencontre moi une histoire",
+    "une histoire",
+    "histoires m7"
+}
+stories = load_stories()
+if not stories:
+    if (
+        normalized in continue_messages
+        or normalized in another_story_messages
+        or normalized in story_requests
+    ):
+        return (
+            "Je voudrais te raconter une histoire, mon ami ! ❤️ "
+            "Mais je n'arrive pas à charger ma bibliothèque "
+            "d'histoires pour le moment."
+        )
+    return None
+current_id = session.get("current_story_id")
+current_story = next(
+    (
+        story for story in stories
+        if story.get("id") == current_id
+    ),
+    None
+)
+# L'utilisateur demande une autre histoire.
+if normalized in another_story_messages:
+    other_stories = [
+        story for story in stories
+        if story.get("id") != current_id
+    ]
+    if other_stories:
+        current_story = other_stories[0]
+        session["current_story_id"] = current_story["id"]
+        session["current_episode"] = 1
+        return format_story_episode(
+            current_story,
+            current_story["episodes"][0]
+        )
+    return (
+        "❤️ Pour le moment, je n'ai qu'une histoire en "
+        "plusieurs épisodes : Le rêve de Moussa.\n\n"
+        "Veux-tu continuer cette histoire ou la recommencer ?"
+    )
+# L'utilisateur veut poursuivre l'histoire actuelle.
+if normalized in continue_messages and current_story:
+    current_number = session.get("current_episode", 1)
+    next_episode = next(
         (
-            story for story in stories
-            if story.get("id") == current_id
+            episode for episode in current_story["episodes"]
+            if episode.get("number") == current_number + 1
         ),
         None
     )
-
-    # L'utilisateur demande une autre histoire.
-    if normalized in another_story_messages:
-        other_stories = [
-            story for story in stories
-            if story.get("id") != current_id
-        ]
-
-if other_stories:
-current_story = other_stories[0]
-session[“current_story_id”] = current_story[“id”]
-session[“current_episode”] = 1
-return format_story_episode(
-current_story,
-current_story[“episodes”][0]
-)
-
-        return (
-            "❤️ Pour le moment, je n'ai qu'une histoire en "
-            "plusieurs épisodes : Le rêve de Moussa.\n\n"
-            "Veux-tu continuer cette histoire ou la recommencer ?"
+    if next_episode:
+        session["current_episode"] = next_episode["number"]
+        return format_story_episode(
+            current_story,
+            next_episode
         )
-
-    # L'utilisateur veut poursuivre l'histoire actuelle.
-    if normalized in continue_messages and current_story:
-        current_number = session.get("current_episode", 1)
-
-        next_episode = next(
-            (
-                episode for episode in current_story["episodes"]
-                if episode.get("number") == current_number + 1
-            ),
-            None
-        )
-if next_episode:
-session[“current_episode”] = next_episode[“number”]
-return format_story_episode(
-current_story,
-next_episode
-)
-
-        session.pop("current_story_id", None)
-        session.pop("current_episode", None)
-
-        return (
-            "🎉 Nous avons terminé cette histoire ensemble, mon ami ! ❤️\n\n"
-            "Veux-tu découvrir une autre histoire M7 ?"
-        )
-
-    # L'utilisateur demande une nouvelle histoire.
-    is_story_request = (
-        normalized in story_requests
-        or (
-            "histoire" in normalized.split()
-            and any(
-                word in normalized.split()
-                for word in {"raconte", "raconter", "propose"}
-            )
+    session.pop("current_story_id", None)
+    session.pop("current_episode", None)
+    return (
+        "🎉 Nous avons terminé cette histoire ensemble, mon ami ! ❤️\n\n"
+        "Veux-tu découvrir une autre histoire M7 ?"
+    )
+# L'utilisateur demande une nouvelle histoire.
+is_story_request = (
+    normalized in story_requests
+    or (
+        "histoire" in normalized.split()
+        and any(
+            word in normalized.split()
+            for word in {"raconte", "raconter", "propose"}
         )
     )
-
-if is_story_request:
-current_story = stories[0]
-session[“current_story_id”] = current_story[“id”]
-session[“current_episode”] = 1
-return format_story_episode(
-current_story,
-current_story[“episodes”][0]
 )
-
-    return None
+if is_story_request:
+    current_story = stories[0]
+    session["current_story_id"] = current_story["id"]
+    session["current_episode"] = 1
+    return format_story_episode(
+        current_story,
+        current_story["episodes"][0]
+    )
+return None
 # ==========================================================
 # PAGE D'ACCUEIL
 # ==========================================================
