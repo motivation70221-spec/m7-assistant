@@ -814,18 +814,18 @@ def get_story_response(message):
 
     normalized = normalize_text(message)
 
-    continue_messages = {
-        “continue”,
-        “encore”,
-        “suivant”,
-        “la suite”,
-        “continue stp”,
-        “continue l histoire”,
-        “raconte la suite”,
-        “episode suivant”,
-        “episode 2”,
-        “episode 3”
-    }
+continue_messages = {
+“continue”,
+“encore”,
+“suivant”,
+“la suite”,
+“continue stp”,
+“continue l histoire”,
+“raconte la suite”,
+“episode suivant”,
+“episode 2”,
+“episode 3”
+}
 
     another_story_messages = {
         "une autre",
@@ -878,14 +878,14 @@ def get_story_response(message):
             if story.get("id") != current_id
         ]
 
-        if other_stories:
-            current_story = other_stories[0]
-            session["current_story_id"] = current_story["id"]
-            session["current_episode"] = 1
-             return format_story_episode(
-                current_story,
-                current_story["episodes"][0]
-            )
+if other_stories:
+current_story = other_stories[0]
+session[“current_story_id”] = current_story[“id”]
+session[“current_episode”] = 1
+return format_story_episode(
+current_story,
+current_story[“episodes”][0]
+)
 
         return (
             "❤️ Pour le moment, je n'ai qu'une histoire en "
@@ -904,13 +904,12 @@ def get_story_response(message):
             ),
             None
         )
-
-        if next_episode:
-        session[“current_episode”] = next_episode[“number”]
-        return format_story_episode(
-        current_story,
-        next_episode
-       )
+if next_episode:
+session[“current_episode”] = next_episode[“number”]
+return format_story_episode(
+current_story,
+next_episode
+)
 
         session.pop("current_story_id", None)
         session.pop("current_episode", None)
@@ -932,14 +931,14 @@ def get_story_response(message):
         )
     )
 
-    if is_story_request:
-       current_story = stories[0]
-       session[“current_story_id”] = current_story[“id”]
-       session[“current_episode”] = 1
-       return format_story_episode(
-       current_story,
-       current_story[“episodes”][0]
-   )
+if is_story_request:
+current_story = stories[0]
+session[“current_story_id”] = current_story[“id”]
+session[“current_episode”] = 1
+return format_story_episode(
+current_story,
+current_story[“episodes”][0]
+)
 
     return None
 # ==========================================================
@@ -998,7 +997,7 @@ def chat_api():
                 "Écris-moi ce que tu souhaites partager."
             )
         })
-     # 0. Gestion des histoires M7 en épisodes.
+    # 0. Gestion des histoires M7 en épisodes.
     story_reply = get_story_response(message)
     if story_reply:
         return jsonify({"reply": story_reply})
