@@ -814,7 +814,7 @@ def get_story_response(message):
 
     normalized = normalize_text(message)
 
-continue_messages = {
+ continue_messages = {
 “continue”,
 “encore”,
 “suivant”,
