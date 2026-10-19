@@ -620,15 +620,91 @@ def get_simple_response(message):
 # ==========================================================
 def get_contextual_response(message):
     """
-    Utilise le sujet précédent pour mieux répondre aux
-    messages courts comme 'raconte-moi une histoire'.
-    Cette mémoire appartient à la session du navigateur.
+    Utilise le sujet précédent pour mieux comprendre
+    les réponses courtes et les demandes de continuation.
     """
     normalized = normalize_text(message)
     last_topic = session.get("last_topic")
+
     if not last_topic:
         return None
-    if normalized in {
+
+    # Comprendre les réponses positives dans le contexte.
+    positive_answers = {
+        "oui",
+        "oui merci",
+        "d accord",
+        "ok",
+        "okay",
+        "bien sur",
+        "exactement",
+        "tout a fait"
+    }
+
+    if normalized in positive_answers:
+        topic_questions = {
+            "amitie": (
+                "Tu sembles d'accord, mon ami ! ❤️ "
+                "Pour approfondir notre discussion sur l'amitié : "
+                "selon toi, qu'est-ce qui prouve qu'un ami "
+                "est vraiment sincère dans les moments difficiles ?"
+            ),
+            "amour": (
+                "D'accord, mon ami ! ❤️ Continuons à parler d'amour. "
+                "Selon toi, qu'est-ce qui permet de construire "
+                "une relation saine et sincère ?"
+            ),
+            "motivation": (
+                "Très bien, mon ami ! 💪 Restons sur la motivation. "
+                "Quel objectif aimerais-tu atteindre, même "
+                "si cela demande du temps et des efforts ?"
+            ),
+            "confiance": (
+                "D'accord ! 🌟 Continuons sur la confiance en soi. "
+                "Dans quelle situation aimerais-tu apprendre "
+                "à avoir davantage confiance en toi ?"
+            ),
+            "patience": (
+                "D'accord, mon ami ! 🙏 Parlons de patience. "
+                "Quelle situation te demande le plus de patience "
+                "en ce moment ?"
+            ),
+            "histoires": (
+                "Avec plaisir ! ❤️ Veux-tu que nous parlions "
+                "de la leçon de l'histoire ou préfères-tu "
+                "découvrir une autre histoire M7 ?"
+            ),
+            "lecons": (
+                "Très bien ! 🧠 Continuons notre réflexion. "
+                "Quelle leçon de vie te semble la plus importante "
+                "pour avancer dans la vie ?"
+            )
+        }
+
+        return topic_questions.get(
+            last_topic,
+            "D'accord, mon ami ! ❤️ Continuons notre discussion. "
+            "Qu'aimerais-tu approfondir dans ce sujet ?"
+        )
+
+    # Comprendre les réponses négatives sans abandonner le sujet.
+    negative_answers = {
+        "non",
+        "pas vraiment",
+        "pas trop",
+        "non merci"
+    }
+
+    if normalized in negative_answers:
+        return (
+            "Pas de problème, mon ami ! ❤️ "
+            "Nous pouvons voir les choses autrement. "
+            "Qu'est-ce que tu en penses, toi ? "
+            "Tu peux m'expliquer avec tes propres mots."
+        )
+
+    # Comprendre les demandes de continuation.
+    continuation_messages = {
         "continue",
         "continue stp",
         "continue s il te plait",
@@ -636,13 +712,16 @@ def get_contextual_response(message):
         "ensuite",
         "raconte la suite",
         "la suite"
-    }:
+    }
+
+    if normalized in continuation_messages:
         return (
-            "Bien sûr, mon ami ! ❤️ Je veux continuer avec toi. "
-            "Peux-tu me rappeler la dernière idée ou la dernière "
-            "partie dont nous parlions, pour que je poursuive "
-            "dans la bonne direction ?"
+            "Bien sûr, mon ami ! ❤️ Continuons sur le sujet "
+            "dont nous parlions. Dis-moi ce que tu aimerais "
+            "approfondir, ou pose-moi ta prochaine question."
         )
+
+    # Relier une demande d'histoire au sujet précédent.
     if normalized in {
         "raconte une histoire",
         "raconte moi une histoire",
@@ -658,9 +737,12 @@ def get_contextual_response(message):
             question = "raconte une histoire inspirante"
         else:
             question = "raconte une histoire inspirante"
+
         response = find_response(question)
+
         if response:
             return response
+
     return None
 # ==========================================================
 # COMPRENDRE LES RÉPONSES QUI SUIVENT UNE QUESTION
