@@ -558,6 +558,24 @@ def get_simple_response(message):
             "Avec plaisir, mon ami ! ❤️ "
             "Tu peux continuer, je t'écoute."
         )
+     # Comprend les réponses positives sur l'état de la personne.
+    if normalized in {
+        "cv je vais bien et toi",
+        "cv ca va et toi",
+        "je vais bien et toi",
+        "je vais bien et vous",
+        "ca va bien et toi",
+        "ca va bien merci",
+        "ca va merci",
+        "je vais bien merci",
+        "cv",
+        "ca va bien"
+    }:
+        return (
+            "Content de savoir que tu vas bien, mon ami ! ❤️ "
+            "De mon côté, je suis là et prêt à discuter avec toi. 😊 "
+            "De quoi aimerais-tu parler aujourd'hui ?"
+        )
     if normalized in {
         "ca va",
         "comment ca va",
@@ -567,7 +585,7 @@ def get_simple_response(message):
             "Je suis prêt à discuter avec toi ! 😊 "
             "Et toi, comment te sens-tu aujourd'hui ?"
         )
-    #  Réactions positives et appréciations.
+     # Réactions positives et appréciations.
     if normalized in {
         "c est cool",
         "c est genial",
