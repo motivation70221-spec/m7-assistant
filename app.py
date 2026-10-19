@@ -971,6 +971,25 @@ def remember_topic(message):
             session["last_topic"] = topic
             return
 # ==========================================================
+# MÉMOIRE DES QUESTIONS DE M7
+# ==========================================================
+def create_chat_response(reply, message=None):
+    """
+    Prépare la réponse de M7 et mémorise
+    la dernière question posée à l'utilisateur.
+    """
+    if not isinstance(reply, str):
+        reply = (
+            "Je suis là, mon ami ! ❤️ "
+            "Peux-tu m'expliquer ce que tu souhaites ?"
+        )
+    # Mémoriser la dernière question de M7.
+    remember_bot_question(reply)
+    # Mémoriser le sujet abordé par l'utilisateur.
+    if isinstance(message, str) and message.strip():
+        remember_topic(message)
+    return jsonify({"reply": reply})
+# ==========================================================
 # HISTOIRES M7 EN PLUSIEURS ÉPISODES
 # ==========================================================
 def load_stories():
