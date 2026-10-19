@@ -785,22 +785,46 @@ def load_stories():
 
     return []
 
+# ==========================================================
+# PRÉSENTER LES CHOIX À LA FIN DE CHAQUE ÉPISODE
+# ==========================================================
+def format_story_episode(story, episode):
+    """Affiche un épisode avec des indications adaptées."""
 
+    text = episode.get("text", "")
+    number = episode.get("number", 1)
+    total = len(story.get("episodes", []))
+
+    if number < total:
+        return (
+            text
+            + "\n\n➡️ Pour continuer l'histoire, écris "
+            "« Suivant » ou « Continue ».\n"
+            + "📚 Pour choisir une autre histoire, écris "
+            "« Une autre histoire »."
+        )
+
+    return (
+        text
+        + "\n\n🎉 Tu as terminé cette histoire ! ❤️\n"
+        + "Tu peux discuter avec M7 de cette leçon de vie."
+    )
 def get_story_response(message):
     """Gère le début, la suite et le changement d'histoire."""
 
     normalized = normalize_text(message)
 
     continue_messages = {
-        "continue",
-        "encore",
-        "la suite",
-        "continue stp",
-        "continue l histoire",
-        "raconte la suite",
-        "episode suivant",
-        "episode 2",
-        "episode 3"
+        “continue”,
+        “encore”,
+        “suivant”,
+        “la suite”,
+        “continue stp”,
+        “continue l histoire”,
+        “raconte la suite”,
+        “episode suivant”,
+        “episode 2”,
+        “episode 3”
     }
 
     another_story_messages = {
@@ -858,7 +882,10 @@ def get_story_response(message):
             current_story = other_stories[0]
             session["current_story_id"] = current_story["id"]
             session["current_episode"] = 1
-            return current_story["episodes"][0]["text"]
+             return format_story_episode(
+                current_story,
+                current_story["episodes"][0]
+            )
 
         return (
             "❤️ Pour le moment, je n'ai qu'une histoire en "
@@ -879,8 +906,11 @@ def get_story_response(message):
         )
 
         if next_episode:
-            session["current_episode"] = next_episode["number"]
-            return next_episode["text"]
+        session[“current_episode”] = next_episode[“number”]
+        return format_story_episode(
+        current_story,
+        next_episode
+       )
 
         session.pop("current_story_id", None)
         session.pop("current_episode", None)
@@ -903,10 +933,13 @@ def get_story_response(message):
     )
 
     if is_story_request:
-        current_story = stories[0]
-        session["current_story_id"] = current_story["id"]
-        session["current_episode"] = 1
-        return current_story["episodes"][0]["text"]
+       current_story = stories[0]
+       session[“current_story_id”] = current_story[“id”]
+       session[“current_episode”] = 1
+       return format_story_episode(
+       current_story,
+       current_story[“episodes”][0]
+   )
 
     return None
 # ==========================================================
