@@ -3,19 +3,39 @@ import json
 import os
 import re
 import unicodedata
-import random
 from difflib import SequenceMatcher
 # ==========================================================
 # CONFIGURATION DE M7
 # ==========================================================
 app = Flask(__name__)
+def remember_bot_question(reply):
+    """
+    Mémorise la dernière question posée par M7
+    pour mieux comprendre la réponse suivante.
+    """
+    if not isinstance(reply, str):
+        return
+    questions = [
+        question.strip()
+        for question in reply.split("?")
+        if question.strip()
+    ]
+    if not questions:
+        session.pop("last_bot_question", None)
+        return
+    last_question = questions[-1]
+    # Ne mémoriser que le texte correspondant
+    # à la dernière question de M7.
+    if len(last_question) <= 300:
+        session["last_bot_question"] = last_question + "?"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
+# En production, définir SECRET_KEY dans les variables
+# d'environnement de Render.
 app.secret_key = os.environ.get(
     "SECRET_KEY",
     "m7-cle-temporaire-a-remplacer-en-production"
 )
-MAX_MESSAGE_LENGTH = 2000
 # ==========================================================
 # NORMALISATION DU TEXTE
 # ==========================================================
@@ -26,35 +46,21 @@ def normalize_text(text):
     text = text.replace("`", "'").replace("´", "'")
     text = unicodedata.normalize("NFD", text)
     text = "".join(
-        char for char in text
+        char
+        for char in text
         if unicodedata.category(char) != "Mn"
     )
     text = re.sub(r"[^\w\s]", " ", text)
     text = re.sub(r"\s+", " ", text)
     return text.strip()
-def get_words(text):
-    """Extrait les mots utiles d'un message."""
-    ignored_words = {
-        "alors", "avec", "chez", "dans", "des", "est",
-        "et", "moi", "mon", "pour", "que", "qui",
-        "sur", "toi", "une", "les", "aux", "par",
-        "mais", "donc", "comment", "pourquoi",
-        "peux", "peut", "veux", "voudrais", "quoi",
-        "quel", "quelle", "quels", "quelles", "pourrait",
-        "pourrais", "faire", "parle", "parlons"
-    }
-    return {
-        word
-        for word in normalize_text(text).split()
-        if len(word) >= 3 and word not in ignored_words
-    }
 # ==========================================================
 # CHARGEMENT DES CONNAISSANCES JSON
 # ==========================================================
 def load_knowledge():
     """
-    Charge les fichiers JSON situés à la racine
-    et dans le dossier data.
+    Charge les connaissances JSON situées :
+    - à la racine du projet ;
+    - dans le dossier data, s'il existe.
     Format attendu :
     [
         {
@@ -65,6 +71,7 @@ def load_knowledge():
     """
     knowledge = []
     files_to_read = []
+    # Cherche les fichiers JSON à la racine.
     try:
         for filename in os.listdir(BASE_DIR):
             if filename.endswith(".json"):
@@ -76,6 +83,7 @@ def load_knowledge():
             "Impossible de parcourir la racine : %s",
             error
         )
+    # Cherche aussi les fichiers JSON dans data.
     if os.path.isdir(DATA_DIR):
         try:
             for filename in os.listdir(DATA_DIR):
@@ -88,7 +96,9 @@ def load_knowledge():
                 "Impossible de parcourir data : %s",
                 error
             )
-    for filepath in sorted(set(files_to_read)):
+    # Évite de lire deux fois le même fichier.
+    files_to_read = sorted(set(files_to_read))
+    for filepath in files_to_read:
         filename = os.path.basename(filepath)
         try:
             with open(filepath, "r", encoding="utf-8") as file:
@@ -114,11 +124,12 @@ def load_knowledge():
                     if isinstance(pattern, str)
                     and normalize_text(pattern)
                 ]
-                if clean_patterns:
-                    knowledge.append({
-                        "patterns": clean_patterns,
-                        "response": response
-                    })
+                if not clean_patterns:
+                    continue
+                knowledge.append({
+                    "patterns": clean_patterns,
+                    "response": response
+                })
         except (OSError, json.JSONDecodeError) as error:
             app.logger.warning(
                 "Erreur de lecture de %s : %s",
@@ -126,15 +137,34 @@ def load_knowledge():
                 error
             )
     app.logger.info(
-        "M7 a chargé %s connaissances JSON.",
+        "M7 a chargé %s connaissances depuis les fichiers JSON.",
         len(knowledge)
     )
     return knowledge
 # ==========================================================
-# CORRESPONDANCE ENTRE UN MESSAGE ET LES CONNAISSANCES
+# RECONNAISSANCE DES MOTS
+# ==========================================================
+def get_words(text):
+    """Extrait les mots utiles d'un message."""
+    ignored_words = {
+        "alors", "avec", "chez", "dans", "des", "est",
+        "et", "moi", "mon", "pour", "que", "qui",
+        "sur", "toi", "une", "les", "aux", "par",
+        "mais", "donc", "comment", "pourquoi",
+        "peux", "peut", "veux", "voudrais", "quoi",
+        "quel", "quelle", "quels", "quelles", "pourrait",
+        "pourrais", "faire", "parle", "parlons"
+    }
+    return {
+        word
+        for word in normalize_text(text).split()
+        if len(word) >= 3 and word not in ignored_words
+    }
+# ==========================================================
+# ÉVALUATION DES CORRESPONDANCES
 # ==========================================================
 def score_pattern(message, pattern):
-    """Évalue la ressemblance entre un message et un exemple."""
+    """Évalue la correspondance entre deux textes."""
     message = normalize_text(message)
     pattern = normalize_text(pattern)
     if not message or not pattern:
@@ -156,7 +186,9 @@ def score_pattern(message, pattern):
     if not common_words:
         if len(message) >= 12 and len(pattern) >= 12:
             ratio = SequenceMatcher(
-                None, message, pattern
+                None,
+                message,
+                pattern
             ).ratio()
             if ratio >= 0.84:
                 return ratio * 0.75
@@ -170,23 +202,25 @@ def score_pattern(message, pattern):
             return 0.0
         score = min(score, 0.55)
     return score
+# ==========================================================
+# RECHERCHE DANS LA BIBLIOTHÈQUE
+# ==========================================================
 def find_response(message):
-    """Recherche la réponse connue la plus pertinente."""
+    """Choisit la réponse connue la plus pertinente."""
     normalized = normalize_text(message)
     if not normalized:
         return None
+    knowledge = load_knowledge()
     candidates = []
-    for item in load_knowledge():
-        best_score = max(
-            (
-                score_pattern(normalized, pattern)
-                for pattern in item["patterns"]
-            ),
-            default=0.0
-        )
-        if best_score > 0:
+    for item in knowledge:
+        best_item_score = 0.0
+        for pattern in item["patterns"]:
+            score = score_pattern(normalized, pattern)
+            if score > best_item_score:
+                best_item_score = score
+        if best_item_score > 0:
             candidates.append({
-                "score": best_score,
+                "score": best_item_score,
                 "response": item["response"]
             })
     if not candidates:
@@ -207,29 +241,709 @@ def find_response(message):
             return None
     return best["response"]
 # ==========================================================
-# MÉMOIRE CONVERSATIONNELLE
+# SUJETS PROPOSÉS DANS L'INTERFACE
 # ==========================================================
-def remember_bot_question(reply):
-    """Mémorise la dernière question posée par M7."""
-    if not isinstance(reply, str):
-        return
-    questions = re.findall(
-        r"([^?]{1,300}\?)",
-        reply,
-        flags=re.DOTALL
+def get_topics():
+    """Retourne les sujets affichés dans l'interface."""
+    return [
+        {
+            "label": "❤️ Motivation",
+            "message": "Je veux de la motivation"
+        },
+        {
+            "label": "💪 Confiance en soi",
+            "message": "Comment avoir confiance en moi ?"
+        },
+        {
+            "label": "🧠 Leçons de vie",
+            "message": "Raconte-moi une leçon de vie"
+        },
+        {
+            "label": "🤝 Amitié",
+            "message": "Parlons de l'amitié"
+        },
+        {
+            "label": "🙏 Foi et patience",
+            "message": "Parlons de la patience"
+        },
+        {
+            "label": "❤️ Amour",
+            "message": "Parlons d'amour"
+        },
+        {
+            "label": "🎬 Histoires M7",
+            "message": "Raconte-moi une histoire M7"
+        },
+        {
+            "label": "👤 Mon créateur",
+            "message": "Qui t'a créé ?"
+        }
+    ]
+# ==========================================================
+# SUGGESTIONS DE DISCUSSION
+# ==========================================================
+def get_suggestion_response():
+    """Présente les sujets disponibles dans M7."""
+    return (
+        "Avec plaisir ! ❤️ Voici quelques sujets que nous "
+        "pouvons explorer ensemble :\n\n"
+        "💪 Motivation : retrouver le courage et avancer.\n"
+        "🌟 Confiance en soi : apprendre à reconnaître ta valeur.\n"
+        "🤝 Amitié : comprendre les relations sincères.\n"
+        "🧠 Leçons de vie : réfléchir à nos choix et à nos erreurs.\n"
+        "🙏 Foi et patience : garder espoir pendant les épreuves.\n"
+        "❤️ Amour : parler des relations et des déceptions.\n"
+        "🎬 Histoires M7 : découvrir des histoires inspirantes.\n\n"
+        "Quel sujet aimerais-tu découvrir en premier ?"
     )
-    if questions:
-        session["last_bot_question"] = questions[-1].strip()
-    else:
-        session.pop("last_bot_question", None)
+# ==========================================================
+# RÉPONSES DE BASE
+# ==========================================================
+def get_identity_response():
+    """Répond aux questions courantes sur l'identité de M7."""
+    response = find_response("qui es tu")
+    if response:
+        return response
+    return (
+        "Salut mon ami ! ❤️ Je suis M7, l'assistant de "
+        "Motivation7. Je suis là pour discuter avec toi, "
+        "partager des conseils, parler de motivation, "
+        "d'amitié, d'amour et de leçons de vie.\n\n"
+        "Je m'améliore grâce aux connaissances qui me sont "
+        "fournies et au code qui me permet de fonctionner."
+    )
+def get_creator_response():
+    """Répond aux questions sur le créateur de M7."""
+    response = find_response("qui est cheikh")
+    if response:
+        return response
+    return (
+        "M7 est un projet de Motivation7 créé par Cheikh "
+        "avec l'aide de ChatGPT. ❤️ Le projet a été construit "
+        "progressivement grâce aux idées, aux essais et au "
+        "travail de son créateur.\n\n"
+        "M7 est encore en développement et ses capacités "
+        "dépendent du code et des connaissances qui lui sont "
+        "ajoutés."
+    )
+def fallback_response():
+    """Répond lorsqu'aucune réponse fiable n'est trouvée."""
+    return (
+        "Je veux bien en discuter avec toi. ❤️ "
+        "Je ne suis pas encore certain de comprendre "
+        "exactement ce que tu souhaites.\n\n"
+        "Peux-tu reformuler ta question ou me donner "
+        "un peu plus de détails ? Je vais essayer de "
+        "mieux comprendre."
+    )
+# ==========================================================
+# RECONNAISSANCE DES SUJETS
+# ==========================================================
+def get_topic_response(message):
+    """
+    Reconnaît les intentions fréquentes et les relie
+    aux connaissances présentes dans les fichiers JSON.
+    """
+    normalized = normalize_text(message)
+    words = set(normalized.split())
+    # Identité de M7.
+    identity_questions = {
+        "qui es tu",
+        "qui es tu m7",
+        "tu es qui",
+        "toi tu es qui",
+        "tu es quoi",
+        "quel est ton nom",
+        "comment tu t appelles",
+        "presente toi",
+        "presente toi m7",
+        "parle moi de toi",
+        "dis moi qui tu es",
+        "qui etes vous",
+        "c est quoi m7"
+    }
+    if normalized in identity_questions or normalized == "m7":
+        return get_identity_response()
+    # Questions sur le créateur.
+    creator_questions = {
+        "qui t a cree",
+        "qui est ton createur",
+        "qui est derriere m7",
+        "qui a cree m7",
+        "qui a fait m7",
+        "qui a construit m7",
+        "qui est cheikh",
+        "parle moi de cheikh"
+    }
+    if normalized in creator_questions:
+        return get_creator_response()
+    if normalized == "cheikh":
+        return get_creator_response()
+    creator_terms = {
+        "createur", "cree", "creation", "cheikh",
+        "motivation7"
+    }
+    identity_terms = {
+        "qui", "identite", "presente", "nom",
+        "parle", "raconte"
+    }
+    if (
+        words.intersection(creator_terms)
+        and words.intersection(identity_terms)
+    ):
+        if "cheikh" in words or "motivation7" in words:
+            return get_creator_response()
+        response = find_response("qui t a cree")
+        if response:
+            return response
+        return get_creator_response()
+    # Demandes de suggestions.
+    suggestion_terms = {
+        "propose", "proposes", "sujet", "sujets",
+        "interesser", "interesse", "interesserait",
+        "idee", "idees"
+    }
+    if (
+        words.intersection(suggestion_terms)
+        and (
+            "propose" in words
+            or "proposes" in words
+            or "sujet" in words
+            or "sujets" in words
+            or "interesser" in words
+            or "interesserait" in words
+            or "idee" in words
+            or "idees" in words
+        )
+    ):
+        return get_suggestion_response()
+    # Confiance en soi.
+    confidence_terms = {
+        "confiance", "confiant", "confiante",
+        "timide", "timidite", "estime"
+    }
+    if words.intersection(confidence_terms):
+        response = find_response(message)
+        if response:
+            return response
+        return (
+            "🌟 La confiance en soi se construit progressivement. "
+            "Tu n'as pas besoin d'être parfait pour reconnaître "
+            "ta valeur. Commence par identifier tes qualités, "
+            "avance à ton rythme et apprends à voir les erreurs "
+            "comme des occasions de progresser. ❤️\n\n"
+            "Dans quelle situation aimerais-tu avoir davantage "
+            "confiance en toi ?"
+        )
+    # Sujets reliés aux fichiers JSON.
+    topic_routes = [
+        (
+            {"amitie", "ami", "amis", "amie"},
+            "parlons de l amitie"
+        ),
+        (
+            {"motivation", "motive", "motiver", "courage"},
+            "je veux de la motivation"
+        ),
+        (
+            {"patience", "patient", "patiente"},
+            "parlons de la patience"
+        ),
+        (
+            {"respect", "respecter"},
+            "parlons du respect"
+        ),
+        (
+            {"honnetete", "honnete", "honnetes"},
+            "parlons de l honnetete"
+        ),
+        (
+            {"pardon", "pardonner", "blessure"},
+            "parlons du pardon"
+        ),
+        (
+            {"choix", "decision", "decider"},
+            "parlons des choix"
+        ),
+        (
+            {"lecon", "lecons", "vie"},
+            "raconte moi une lecon de vie"
+        ),
+        (
+            {"discipline", "disciplinee", "discipliner"},
+            "parle moi de discipline"
+        ),
+        (
+            {"amour", "aimer", "amoureux", "amoureuse", "couple"},
+            "parle moi d amour"
+        ),
+        (
+            {"rupture", "separation", "coeur", "ex"},
+            "comment oublier mon ex"
+        ),
+        (
+            {"solitude", "seul", "seule", "triste", "emotions"},
+            "je me sens seul"
+        ),
+        (
+            {"perseverance", "abandonner", "espoir"},
+            "perseverance"
+        ),
+        (
+            {"histoire", "histoires", "inspirante", "inspirantes"},
+            "raconte une histoire inspirante"
+        )
+    ]
+    for topic_words, canonical_question in topic_routes:
+        if words.intersection(topic_words):
+            response = find_response(canonical_question)
+            if response:
+                return response
+    # Dernière tentative : la phrase complète.
+    return find_response(message)
+# ==========================================================
+# EMOJIS ET ÉMOTIONS
+# ==========================================================
+def get_emoji_response(message):
+    """Reconnaît certains emojis envoyés seuls."""
+    emoji_responses = {
+        "❤️": (
+            "❤️ Je t'envoie beaucoup de bonnes pensées, mon ami. "
+            "De quoi aimerais-tu parler aujourd'hui ?"
+        ),
+        "❤": (
+            "❤️ Je t'envoie beaucoup de bonnes pensées, mon ami."
+        ),
+        "🥰": (
+            "🥰 Quel joli message ! Je te souhaite beaucoup "
+            "de douceur et de bonheur."
+        ),
+        "😊": (
+            "😊 Ton sourire fait plaisir ! Quoi de beau "
+            "aujourd'hui ?"
+        ),
+        "😂": (
+            "😂 Un peu de joie fait du bien ! "
+            "Raconte-moi ce qui te fait rire."
+        ),
+        "😢": (
+            "❤️ Je suis là pour t'écouter. Veux-tu me dire "
+            "ce qui te rend triste ?"
+        ),
+        "😭": (
+            "❤️ Prends ton temps. Tu peux me parler de "
+            "ce que tu traverses."
+        ),
+        "💔": (
+            "💔 Les blessures du cœur peuvent faire mal. "
+            "Tu peux parler de ce que tu ressens, sans jugement."
+        ),
+        "🙏": (
+            "🙏 Que la patience et l'espoir t'accompagnent "
+            "dans les moments difficiles."
+        ),
+        "💪": (
+            "💪 Continue d'avancer pas à pas. "
+            "Même les petits progrès comptent."
+        ),
+        "👍": (
+            "👍 Merci, mon ami ! On continue ensemble."
+        ),
+        "😘": (
+            "❤️ Je t'envoie une pensée bienveillante !"
+        )
+    }
+    return emoji_responses.get(message)
+# ==========================================================
+# SALUTATIONS ET PETITS MESSAGES
+# ==========================================================
+def get_simple_response(message):
+    """Gère les salutations et les messages courants."""
+    normalized = normalize_text(message)
+    greetings = {
+        "bonjour", "bonsoir", "salut", "coucou",
+        "salam", "hello", "bon matin"
+    }
+    if normalized in greetings:
+        return (
+            "Salut mon ami ! ❤️ Heureux de discuter avec toi. "
+            "Comment vas-tu aujourd'hui ?"
+        )
+    if normalized in {
+        "merci",
+        "merci beaucoup",
+        "je te remercie"
+    }:
+        return (
+            "Avec plaisir, mon ami ! ❤️ "
+            "Tu peux continuer, je t'écoute."
+        )
+     # Comprend les réponses positives sur l'état de la personne.
+    if normalized in {
+        "cv je vais bien et toi",
+        "cv ca va et toi",
+        "je vais bien et toi",
+        "je vais bien et vous",
+        "ca va bien et toi",
+        "ca va bien merci",
+        "ca va merci",
+        "je vais bien merci",
+        "cv",
+        "ca va bien"
+    }:
+        return (
+            "Content de savoir que tu vas bien, mon ami ! ❤️ "
+            "De mon côté, je suis là et prêt à discuter avec toi. 😊 "
+            "De quoi aimerais-tu parler aujourd'hui ?"
+        )
+    if normalized in {
+        "ca va",
+        "comment ca va",
+        "comment vas tu"
+    }:
+        return (
+            "Je suis prêt à discuter avec toi ! 😊 "
+            "Et toi, comment te sens-tu aujourd'hui ?"
+        )
+     # Réactions positives et appréciations.
+    if normalized in {
+        "c est cool",
+        "c est genial",
+        "c est super",
+        "super",
+        "genial",
+        "j aime bien",
+        "c est interessant"
+    }:
+        return (
+            "Content que cela te plaise, mon ami ! 😊 "
+            "Qu'est-ce qui t'a le plus plu ou fait réfléchir ?"
+        )
+    if normalized in {
+        "oui", "oui merci", "d accord", "ok", "okay"
+    }:
+        return (
+            "D'accord, mon ami ! ❤️ Continuons ensemble. "
+            "Tu préfères parler de motivation, d'amitié, "
+            "d'amour ou découvrir une histoire M7 ?"
+        )
+    if normalized in {
+        "non", "pas vraiment"
+    }:
+        return (
+            "Pas de problème, mon ami. ❤️ "
+            "Dis-moi simplement ce que tu préfères."
+        )
+    return None
+# ==========================================================
+# MÉMOIRE DE SESSION
+# ==========================================================
+def get_contextual_response(message):
+    """
+    Utilise le sujet précédent pour mieux comprendre
+    les réponses courtes et les demandes de continuation.
+    """
+    normalized = normalize_text(message)
+    last_topic = session.get("last_topic")
+
+    if not last_topic:
+        return None
+
+    # Comprendre les réponses positives dans le contexte.
+    positive_answers = {
+        "oui",
+        "oui merci",
+        "d accord",
+        "ok",
+        "okay",
+        "bien sur",
+        "exactement",
+        "tout a fait"
+    }
+
+    if normalized in positive_answers:
+        topic_questions = {
+            "amitie": (
+                "Tu sembles d'accord, mon ami ! ❤️ "
+                "Pour approfondir notre discussion sur l'amitié : "
+                "selon toi, qu'est-ce qui prouve qu'un ami "
+                "est vraiment sincère dans les moments difficiles ?"
+            ),
+            "amour": (
+                "D'accord, mon ami ! ❤️ Continuons à parler d'amour. "
+                "Selon toi, qu'est-ce qui permet de construire "
+                "une relation saine et sincère ?"
+            ),
+            "motivation": (
+                "Très bien, mon ami ! 💪 Restons sur la motivation. "
+                "Quel objectif aimerais-tu atteindre, même "
+                "si cela demande du temps et des efforts ?"
+            ),
+            "confiance": (
+                "D'accord ! 🌟 Continuons sur la confiance en soi. "
+                "Dans quelle situation aimerais-tu apprendre "
+                "à avoir davantage confiance en toi ?"
+            ),
+            "patience": (
+                "D'accord, mon ami ! 🙏 Parlons de patience. "
+                "Quelle situation te demande le plus de patience "
+                "en ce moment ?"
+            ),
+            "histoires": (
+                "Avec plaisir ! ❤️ Veux-tu que nous parlions "
+                "de la leçon de l'histoire ou préfères-tu "
+                "découvrir une autre histoire M7 ?"
+            ),
+            "lecons": (
+                "Très bien ! 🧠 Continuons notre réflexion. "
+                "Quelle leçon de vie te semble la plus importante "
+                "pour avancer dans la vie ?"
+            )
+        }
+
+        return topic_questions.get(
+            last_topic,
+            "D'accord, mon ami ! ❤️ Continuons notre discussion. "
+            "Qu'aimerais-tu approfondir dans ce sujet ?"
+        )
+
+    # Comprendre les réponses négatives sans abandonner le sujet.
+    negative_answers = {
+        "non",
+        "pas vraiment",
+        "pas trop",
+        "non merci"
+    }
+
+    if normalized in negative_answers:
+        return (
+            "Pas de problème, mon ami ! ❤️ "
+            "Nous pouvons voir les choses autrement. "
+            "Qu'est-ce que tu en penses, toi ? "
+            "Tu peux m'expliquer avec tes propres mots."
+        )
+
+    # Comprendre les demandes de continuation.
+    continuation_messages = {
+        "continue",
+        "continue stp",
+        "continue s il te plait",
+        "et apres",
+        "ensuite",
+        "raconte la suite",
+        "la suite"
+    }
+
+    if normalized in continuation_messages:
+        return (
+            "Bien sûr, mon ami ! ❤️ Continuons sur le sujet "
+            "dont nous parlions. Dis-moi ce que tu aimerais "
+            "approfondir, ou pose-moi ta prochaine question."
+        )
+
+    # Relier une demande d'histoire au sujet précédent.
+    if normalized in {
+        "raconte une histoire",
+        "raconte moi une histoire",
+        "une histoire",
+        "donne un exemple",
+        "un exemple"
+    }:
+        if last_topic == "amour":
+            question = "raconte une histoire d amour"
+        elif last_topic == "amitie":
+            question = "raconte une histoire d amitie"
+        elif last_topic == "motivation":
+            question = "raconte une histoire inspirante"
+        else:
+            question = "raconte une histoire inspirante"
+
+        response = find_response(question)
+
+        if response:
+            return response
+
+    return None
+# ==========================================================
+# COMPRENDRE LES RÉPONSES DANS LA CONVERSATION
+# ==========================================================
+def get_followup_response(message):
+    """
+    Analyse les idées exprimées par l'utilisateur
+    en tenant compte du sujet de la conversation.
+    """
+    normalized = normalize_text(message)
+    words = set(normalized.split())
+
+    last_topic = session.get("last_topic")
+
+    if not last_topic:
+        return None
+
+    # Les idées et expressions associées à l'amitié.
+    friendship_ideas = {
+        "aide": {
+            "aide", "aider", "aides", "aident",
+            "aidera", "aiderai", "aiderais",
+            "soutien", "soutient", "soutenir",
+            "secours", "assister", "accompagner",
+            "accompagne", "conseille", "conseil",
+            "conseiller", "protege", "proteger",
+            "ecoute", "ecouter", "presente",
+            "fidele", "fidelite", "abandonne",
+            "abandonner", "reste", "cote"
+        },
+        "respect": {
+            "respect", "respecte", "respecter",
+            "honnete", "honnetete", "sincerite",
+            "sincere", "confiance", "loyaute",
+            "fidelite", "fidele"
+        },
+        "ecoute": {
+            "ecoute", "ecouter", "comprend",
+            "comprendre", "parle", "conseille",
+            "conseil", "attention", "presence"
+        }
+    }
+
+    # Comprendre différentes façons de parler de l'amitié.
+    if last_topic == "amitie":
+        matched_ideas = []
+
+        for idea, keywords in friendship_ideas.items():
+            if words.intersection(keywords):
+                matched_ideas.append(idea)
+
+        if "aide" in matched_ideas:
+            return (
+                "Tu as raison, mon ami ! ❤️ "
+                "Aider quelqu'un dans les moments difficiles "
+                "peut être une belle preuve d'amitié. "
+                "Cette aide peut prendre plusieurs formes : "
+                "donner un conseil, écouter, accompagner "
+                "ou chercher une solution ensemble. 🤝\n\n"
+                "Selon toi, un véritable ami doit-il "
+                "toujours résoudre nos problèmes, ou parfois "
+                "simplement nous écouter ?"
+            )
+
+        if "respect" in matched_ideas:
+            return (
+                "C'est une valeur importante ! ❤️ "
+                "Le respect et la sincérité permettent "
+                "de construire une amitié dans laquelle "
+                "chacun peut se sentir considéré.\n\n"
+                "Comment montrerais-tu à un ami que "
+                "tu le respectes, même lorsque vous "
+                "n'êtes pas d'accord ?"
+            )
+
+        if "ecoute" in matched_ideas:
+            return (
+                "Exactement, mon ami ! ❤️ "
+                "Savoir écouter permet à un ami de se sentir "
+                "compris et soutenu. Parfois, une personne "
+                "a surtout besoin de pouvoir parler sans "
+                "être jugée.\n\n"
+                "Penses-tu qu'il soit possible d'aider "
+                "un ami simplement en l'écoutant ?"
+            )
+
+    # Reconnaître des réponses sur les relations amoureuses.
+    if last_topic == "amour":
+        love_keywords = {
+            "respect", "sincere", "sincerite",
+            "fidele", "fidelite", "confiance",
+            "ecoute", "dialogue", "honnête",
+            "honnete", "comprendre", "compris",
+            "aime", "aimer", "amour", "soutien"
+        }
+
+        if words.intersection(love_keywords):
+            return (
+                "Tu évoques un élément important "
+                "dans une relation saine. ❤️ "
+                "Le respect, la confiance, la fidélité "
+                "et le dialogue peuvent aider deux personnes "
+                "à mieux se comprendre.\n\n"
+                "Selon toi, comment peut-on reconstruire "
+                "la confiance lorsqu'elle a été blessée ?"
+            )
+
+    # Reconnaître les réponses liées à la motivation.
+    if last_topic == "motivation":
+        motivation_keywords = {
+            "objectif", "reussir", "reussite",
+            "courage", "effort", "efforts",
+            "travail", "perserver", "perseverer",
+            "abandonner", "continuer", "avancer",
+            "discipline", "patience", "espoir"
+        }
+
+        if words.intersection(motivation_keywords):
+            return (
+                "C'est une idée intéressante, mon ami ! 💪 "
+                "Pour atteindre un objectif, il faut souvent "
+                "associer la motivation à de petits efforts "
+                "réguliers. Les progrès peuvent être lents, "
+                "mais chaque étape compte.\n\n"
+                "Quel petit pas pourrais-tu faire dès "
+                "aujourd'hui pour avancer vers ton objectif ?"
+            )
+
+    # Reconnaître les réponses sur la confiance en soi.
+    if last_topic == "confiance":
+        confidence_keywords = {
+            "peur", "timide", "timidite",
+            "courage", "oser", "erreur",
+            "erreurs", "qualite", "qualites",
+            "capacite", "capacites", "confiance",
+            "progresser", "apprendre"
+        }
+
+        if words.intersection(confidence_keywords):
+            return (
+                "Je comprends ton idée. 🌟 "
+                "La confiance en soi se développe avec "
+                "l'expérience. On peut apprendre à reconnaître "
+                "ses qualités et à progresser sans exiger "
+                "de soi la perfection.\n\n"
+                "Quelle situation aimerais-tu apprendre "
+                "à affronter avec plus de confiance ?"
+            )
+
+    # Reconnaître les réponses sur la patience.
+    if last_topic == "patience":
+        patience_keywords = {
+            "attendre", "attente", "temps",
+            "difficile", "difficiles", "epreuve",
+            "epreuves", "calme", "calmer",
+            "espoir", "foi", "patient",
+            "patience", "perserver", "perseverer"
+        }
+
+        if words.intersection(patience_keywords):
+            return (
+                "Tu soulèves un point important. 🙏 "
+                "La patience ne signifie pas rester sans rien "
+                "faire : elle peut aussi consister à continuer "
+                "ses efforts tout en acceptant que certains "
+                "résultats prennent du temps.\n\n"
+                "Qu'est-ce qui t'aide à garder espoir "
+                "lorsqu'une situation devient difficile ?"
+            )
+
+    # Si l'idée n'est pas reconnue, laisser les autres
+    # fonctions de M7 chercher une réponse.
+    return None
 def remember_topic(message):
-    """Actualise le sujet quand un nouveau sujet est détecté."""
+    """Enregistre le sujet principal de la discussion."""
     normalized = normalize_text(message)
     words = set(normalized.split())
     topic_keywords = {
         "amour": {
-            "amour", "aimer", "amoureux", "amoureuse",
-            "couple", "rupture", "coeur", "ex"
+            "amour", "aimer", "amoureux",
+            "amoureuse", "couple", "rupture", "coeur"
         },
         "amitie": {
             "amitie", "ami", "amis", "amie"
@@ -240,422 +954,46 @@ def remember_topic(message):
         },
         "confiance": {
             "confiance", "confiant", "confiante",
-            "timide", "timidite", "estime"
+            "timide", "timidite"
         },
         "patience": {
-            "patience", "patient", "patiente",
-            "foi", "epreuve", "epreuves"
+            "patience", "patient", "patiente", "foi"
         },
         "histoires": {
             "histoire", "histoires", "inspirante"
         },
         "lecons": {
-            "lecon", "lecons"
+            "lecon", "lecons", "vie"
         }
     }
-    # Les messages très courts ne doivent pas effacer
-    # automatiquement le sujet de la conversation.
-    if normalized in {
-        "oui", "non", "ok", "okay", "merci",
-        "continue", "suivant", "la suite",
-        "d accord", "bien sur"
-    }:
-        return
-    # Un sujet n'est modifié que si un indice est détecté.
     for topic, keywords in topic_keywords.items():
         if words.intersection(keywords):
             session["last_topic"] = topic
             return
+# ==========================================================
+# MÉMOIRE DES QUESTIONS DE M7
+# ==========================================================
 def create_chat_response(reply, message=None):
-    """Prépare la réponse et conserve le contexte utile."""
-    if not isinstance(reply, str) or not reply.strip():
+    """
+    Prépare la réponse de M7 et mémorise
+    la dernière question posée à l'utilisateur.
+    """
+    if not isinstance(reply, str):
         reply = (
             "Je suis là, mon ami ! ❤️ "
-            "Peux-tu m'expliquer ce que tu souhaites partager ?"
+            "Peux-tu m'expliquer ce que tu souhaites ?"
         )
-    if isinstance(message, str) and message.strip():
-        session["last_user_message"] = message.strip()[:MAX_MESSAGE_LENGTH]
-        remember_topic(message)
+    # Mémoriser la dernière question de M7.
     remember_bot_question(reply)
-    session.modified = True
+    # Mémoriser le sujet abordé par l'utilisateur.
+    if isinstance(message, str) and message.strip():
+        remember_topic(message)
     return jsonify({"reply": reply})
 # ==========================================================
-# SUJETS DE DISCUSSION
-# ==========================================================
-def get_suggestion_response():
-    return (
-        "Avec plaisir ! ❤️ Voici quelques sujets à explorer :\n\n"
-        "💪 Motivation : retrouver le courage et avancer.\n"
-        "🌟 Confiance en soi : reconnaître ta valeur.\n"
-        "🤝 Amitié : comprendre les relations sincères.\n"
-        "🧠 Leçons de vie : réfléchir à nos choix.\n"
-        "🙏 Foi et patience : garder espoir pendant les épreuves.\n"
-        "❤️ Amour : parler des relations et des déceptions.\n"
-        "🎬 Histoires M7 : découvrir des histoires inspirantes.\n\n"
-        "Quel sujet aimerais-tu découvrir en premier ?"
-    )
-# ==========================================================
-# IDENTITÉ DE M7 ET SON CRÉATEUR
-# ==========================================================
-def get_identity_response():
-    response = find_response("qui es tu")
-    if response:
-        return response
-    return (
-        "Salut mon ami ! ❤️ Je suis M7, l'assistant de Motivation7. "
-        "Je suis là pour discuter avec toi, partager des conseils "
-        "et réfléchir ensemble à des leçons de vie.\n\n"
-        "Je fonctionne grâce à mon code et aux connaissances "
-        "qui m'ont été ajoutées. Je suis encore en développement "
-        "et je peux parfois mal comprendre un message."
-    )
-def get_creator_response():
-    response = find_response("qui est cheikh")
-    if response:
-        return response
-    return (
-        "M7 est un projet de Motivation7 créé par Cheikh "
-        "avec l'aide de ChatGPT. ❤️ Il a été construit "
-        "progressivement grâce aux idées, aux essais et au travail "
-        "de son créateur.\n\n"
-        "M7 continue d'évoluer à mesure que son code et "
-        "ses connaissances sont améliorés."
-    )
-# ==========================================================
-# SALUTATIONS ET EMOJIS
-# ==========================================================
-def get_emoji_response(message):
-    """Reconnaît certains messages constitués d'emojis."""
-    emoji_responses = {
-        "❤️": (
-            "❤️ Merci pour cette belle attention, mon ami ! "
-            "De quoi aimerais-tu parler aujourd'hui ?"
-        ),
-        "❤": "❤️ Je t'envoie une pensée bienveillante, mon ami.",
-        "🥰": "🥰 Quel joli message ! Je te souhaite beaucoup de douceur.",
-        "😊": "😊 Ton sourire fait plaisir ! Quoi de beau aujourd'hui ?",
-        "😂": "😂 Un peu de joie fait du bien ! Qu'est-ce qui te fait rire ?",
-        "😢": "❤️ Je suis là pour t'écouter. Veux-tu me dire ce qui te rend triste ?",
-        "😭": "❤️ Prends ton temps. Tu peux me parler de ce que tu traverses.",
-        "💔": "💔 Les blessures du cœur peuvent faire mal. Tu peux en parler sans jugement.",
-        "🙏": "🙏 Que la patience et l'espoir t'accompagnent dans les moments difficiles.",
-        "💪": "💪 Continue d'avancer pas à pas. Même les petits progrès comptent.",
-        "👍": "👍 Merci, mon ami ! On continue ensemble.",
-        "😘": "❤️ Je t'envoie une pensée bienveillante !"
-    }
-    return emoji_responses.get(message.strip())
-def get_simple_response(message):
-    """Gère les salutations et les réponses courantes."""
-    normalized = normalize_text(message)
-    if normalized in {
-        "bonjour", "bonsoir", "salut", "coucou",
-        "salam", "hello", "bon matin"
-    }:
-        return (
-            "Salut mon ami ! ❤️ Heureux de discuter avec toi. "
-            "Comment vas-tu aujourd'hui ?"
-        )
-    if normalized in {
-        "merci", "merci beaucoup", "je te remercie"
-    }:
-        return "Avec plaisir, mon ami ! ❤️ Je t'écoute."
-    if normalized in {
-        "ca va", "comment ca va", "comment vas tu"
-    }:
-        return (
-            "Je suis prêt à discuter avec toi ! 😊 "
-            "Et toi, comment te sens-tu aujourd'hui ?"
-        )
-    if normalized in {
-        "je vais bien", "je vais bien merci",
-        "ca va bien", "ca va bien merci",
-        "je vais bien et toi", "ca va bien et toi",
-        "cv", "cv je vais bien et toi"
-    }:
-        return (
-            "Content de savoir que tu vas bien ! ❤️ "
-            "De quoi aimerais-tu parler aujourd'hui ?"
-        )
-    if normalized in {
-        "c est cool", "c est genial", "c est super",
-        "super", "genial", "j aime bien",
-        "c est interessant"
-    }:
-        return (
-            "Content que cela te plaise ! 😊 "
-            "Qu'est-ce qui t'a le plus intéressé ?"
-        )
-    return None
-# ==========================================================
-# COMPRÉHENSION DES RÉPONSES COURTES
-# ==========================================================
-def get_contextual_response(message):
-    """Interprète une réponse courte dans son contexte."""
-    normalized = normalize_text(message)
-    last_topic = session.get("last_topic")
-    last_question = normalize_text(
-        session.get("last_bot_question", "")
-    )
-    positive_answers = {
-        "oui", "oui merci", "d accord", "ok", "okay",
-        "bien sur", "exactement", "tout a fait"
-    }
-    negative_answers = {
-        "non", "pas vraiment", "pas trop", "non merci"
-    }
-    continuation_messages = {
-        "continue", "continue stp", "continue s il te plait",
-        "et apres", "ensuite", "raconte la suite",
-        "la suite", "suivant"
-    }
-    if normalized in continuation_messages:
-        if session.get("current_story_id"):
-            return None
-        if last_topic == "amour":
-            return (
-                "Bien sûr, mon ami ! ❤️ Continuons à parler d'amour. "
-                "Une relation saine se construit avec le respect, "
-                "le dialogue et des actes sincères. "
-                "Quel aspect aimerais-tu approfondir ?"
-            )
-        if last_topic == "amitie":
-            return (
-                "Avec plaisir ! 🤝 Une amitié sincère se reconnaît "
-                "souvent dans les actes, particulièrement quand "
-                "la vie devient difficile. Quel aspect de l'amitié "
-                "voudrais-tu explorer davantage ?"
-            )
-        if last_topic == "motivation":
-            return (
-                "Continuons ! 💪 Les progrès viennent souvent "
-                "de petites actions répétées. Quel objectif "
-                "aimerais-tu atteindre ?"
-            )
-        return (
-            "Bien sûr, mon ami ! ❤️ Continuons notre discussion. "
-            "Dis-moi ce que tu aimerais approfondir."
-        )
-    if normalized in positive_answers:
-        # Si M7 vient de poser une question précise,
-        # on évite de faire comme si l'utilisateur avait
-        # donné une longue réponse.
-        if last_question:
-            if any(word in last_question.split() for word in {
-                "aide", "ecouter", "ecoute", "penses",
-                "crois", "selon", "veux", "prefere"
-            }):
-                if last_topic == "amitie":
-                    return (
-                        "Je comprends, mon ami ! ❤️ "
-                        "Ton avis compte dans cette réflexion sur "
-                        "l'amitié. Une relation sincère demande "
-                        "de l'écoute, du respect et de la présence.\n\n"
-                        "Qu'est-ce qui te paraît le plus important "
-                        "dans une amitié : l'écoute, la loyauté "
-                        "ou le soutien dans les moments difficiles ?"
-                    )
-        return None
-    if normalized in negative_answers:
-        return (
-            "D'accord, mon ami. ❤️ Nous pouvons voir les choses "
-            "autrement ou changer de sujet. Qu'est-ce qui te "
-            "correspondrait le mieux ?"
-        )
-    if normalized in {
-        "raconte une histoire", "raconte moi une histoire",
-        "une histoire", "donne un exemple", "un exemple"
-    }:
-        if last_topic == "amour":
-            response = find_response("raconte une histoire d amour")
-        elif last_topic == "amitie":
-            response = find_response("raconte une histoire d amitie")
-        else:
-            response = find_response("raconte une histoire inspirante")
-        if response:
-            return response
-    return None
-# ==========================================================
-# RÉPONSES QUI SUIVENT LES IDÉES DE L'UTILISATEUR
-# ==========================================================
-def get_followup_response(message):
-    """Rebondit sur les idées exprimées par l'utilisateur."""
-    normalized = normalize_text(message)
-    words = set(normalized.split())
-    last_topic = session.get("last_topic")
-    if not last_topic:
-        return None
-    if last_topic == "amitie":
-        staying_keywords = {
-            "reste", "rester", "restez", "toujours",
-            "abandonne", "abandonner", "cote", "present",
-            "presence", "difficile", "difficultes",
-            "moment", "moments", "epreuve", "epreuves"
-        }
-        support_keywords = {
-            "aide", "aider", "soutien", "soutenir",
-            "ecoute", "ecouter", "conseil", "conseiller",
-            "comprendre", "comprend", "respect",
-            "sincere", "sincerite", "loyaute", "fidele"
-        }
-        if words.intersection(staying_keywords):
-            return (
-                "Je comprends ce que tu veux dire, mon ami. ❤️ "
-                "Pour toi, l'amitié se révèle surtout quand la vie "
-                "devient difficile. C'est souvent dans ces moments "
-                "que l'on découvre qui reste présent, qui écoute "
-                "et qui nous soutient sincèrement. 🤝\n\n"
-                "Mais un véritable ami n'est pas obligé d'avoir "
-                "toutes les solutions. Parfois, sa présence suffit "
-                "déjà à nous donner du courage.\n\n"
-                "Selon toi, comment peut-on distinguer un ami "
-                "sincère d'une personne qui reste seulement "
-                "quand tout va bien ?"
-            )
-        if words.intersection(support_keywords):
-            return (
-                "Tu soulèves quelque chose d'important ! ❤️ "
-                "L'aide, l'écoute et le respect peuvent être "
-                "des preuves d'une amitié sincère. Un ami ne "
-                "résout pas toujours nos problèmes, mais il peut "
-                "nous aider à nous sentir moins seuls. 🤝\n\n"
-                "Selon toi, lorsqu'un ami traverse une épreuve, "
-                "est-il parfois plus important de l'écouter "
-                "que de lui donner immédiatement un conseil ?"
-            )
-    if last_topic == "amour":
-        love_keywords = {
-            "respect", "sincere", "sincerite", "fidele",
-            "fidelite", "confiance", "ecoute", "dialogue",
-            "honnete", "comprendre", "compris", "aime",
-            "aimer", "soutien", "trahison", "mensonge"
-        }
-        if words.intersection(love_keywords):
-            return (
-                "Tu évoques un élément important dans une relation. ❤️ "
-                "Le respect, la confiance et le dialogue aident "
-                "deux personnes à mieux se comprendre. L'amour "
-                "ne repose pas seulement sur les paroles : il "
-                "se voit aussi dans les actes.\n\n"
-                "À ton avis, lorsqu'une confiance a été blessée, "
-                "quels actes peuvent aider à la reconstruire ?"
-            )
-    if last_topic == "motivation":
-        motivation_keywords = {
-            "objectif", "reussir", "reussite", "courage",
-            "effort", "efforts", "travail", "perseverer",
-            "abandonner", "continuer", "avancer",
-            "discipline", "patience", "espoir"
-        }
-        if words.intersection(motivation_keywords):
-            return (
-                "C'est une idée intéressante ! 💪 La motivation "
-                "peut nous aider à commencer, tandis que la "
-                "discipline nous aide à continuer même lorsque "
-                "l'envie diminue.\n\n"
-                "Quel petit pas réaliste pourrais-tu faire "
-                "aujourd'hui pour avancer vers ton objectif ?"
-            )
-    if last_topic == "confiance":
-        confidence_keywords = {
-            "peur", "timide", "timidite", "courage", "oser",
-            "erreur", "erreurs", "qualite", "qualites",
-            "capacite", "capacites", "confiance",
-            "progresser", "apprendre"
-        }
-        if words.intersection(confidence_keywords):
-            return (
-                "Je comprends ton idée. 🌟 La confiance en soi "
-                "se construit avec le temps. Tu peux reconnaître "
-                "tes qualités tout en continuant à apprendre. "
-                "Faire une erreur ne signifie pas que tu es incapable.\n\n"
-                "Dans quelle situation aimerais-tu te sentir "
-                "plus à l'aise ou plus sûr de toi ?"
-            )
-    if last_topic == "patience":
-        patience_keywords = {
-            "attendre", "attente", "temps", "difficile",
-            "epreuve", "epreuves", "calme", "espoir",
-            "foi", "patient", "patience", "perseverer"
-        }
-        if words.intersection(patience_keywords):
-            return (
-                "Tu soulèves un point important. 🙏 La patience "
-                "ne signifie pas rester sans rien faire. Elle "
-                "peut consister à poursuivre ses efforts tout en "
-                "acceptant que certains résultats prennent du temps.\n\n"
-                "Qu'est-ce qui t'aide à garder espoir lorsque "
-                "la situation devient difficile ?"
-            )
-    return None
-# ==========================================================
-# RECONNAISSANCE DES SUJETS
-# ==========================================================
-def get_topic_response(message):
-    """Dirige le message vers le sujet ou la connaissance adaptée."""
-    normalized = normalize_text(message)
-    words = set(normalized.split())
-    if normalized in {
-        "qui es tu", "qui es tu m7", "tu es qui",
-        "tu es quoi", "quel est ton nom",
-        "comment tu t appelles", "presente toi",
-        "parle moi de toi", "dis moi qui tu es", "m7"
-    }:
-        return get_identity_response()
-    if normalized in {
-        "qui t a cree", "qui est ton createur",
-        "qui est derriere m7", "qui a cree m7",
-        "qui a fait m7", "qui a construit m7",
-        "qui est cheikh", "parle moi de cheikh", "cheikh"
-    }:
-        return get_creator_response()
-    suggestion_terms = {
-        "propose", "proposes", "sujet", "sujets",
-        "interesser", "interesse", "idee", "idees"
-    }
-    if words.intersection(suggestion_terms):
-        return get_suggestion_response()
-    if words.intersection({
-        "confiance", "confiant", "confiante",
-        "timide", "timidite", "estime"
-    }):
-        response = find_response(message)
-        if response:
-            return response
-        return (
-            "🌟 La confiance en soi se construit progressivement. "
-            "Tu n'as pas besoin d'être parfait pour reconnaître "
-            "ta valeur. Commence par identifier tes qualités et "
-            "avance à ton rythme. ❤️\n\n"
-            "Dans quelle situation aimerais-tu avoir davantage "
-            "confiance en toi ?"
-        )
-    topic_routes = [
-        ({"amitie", "ami", "amis", "amie"}, "parlons de l amitie"),
-        ({"motivation", "motive", "motiver", "courage"}, "je veux de la motivation"),
-        ({"patience", "patient", "patiente", "foi"}, "parlons de la patience"),
-        ({"respect", "respecter"}, "parlons du respect"),
-        ({"honnetete", "honnete"}, "parlons de l honnetete"),
-        ({"pardon", "pardonner", "blessure"}, "parlons du pardon"),
-        ({"choix", "decision", "decider"}, "parlons des choix"),
-        ({"lecon", "lecons"}, "raconte moi une lecon de vie"),
-        ({"discipline", "discipliner"}, "parle moi de discipline"),
-        ({"amour", "aimer", "amoureux", "amoureuse", "couple"}, "parle moi d amour"),
-        ({"rupture", "separation", "coeur", "ex"}, "comment oublier mon ex"),
-        ({"solitude", "seul", "seule", "triste", "emotions"}, "je me sens seul"),
-        ({"perseverance", "abandonner", "espoir"}, "perseverance"),
-        ({"histoire", "histoires", "inspirante"}, "raconte une histoire inspirante")
-    ]
-    for topic_words, canonical_question in topic_routes:
-        if words.intersection(topic_words):
-            response = find_response(canonical_question)
-            if response:
-                return response
-    return find_response(message)
-# ==========================================================
-# HISTOIRES M7 EN ÉPISODES
+# HISTOIRES M7 EN PLUSIEURS ÉPISODES
 # ==========================================================
 def load_stories():
-    """Charge les histoires depuis data/stories.json."""
+    """Charge les histoires organisées en épisodes."""
     filepath = os.path.join(DATA_DIR, "stories.json")
     try:
         with open(filepath, "r", encoding="utf-8") as file:
@@ -665,7 +1003,7 @@ def load_stories():
                 story for story in stories
                 if isinstance(story, dict)
                 and isinstance(story.get("episodes"), list)
-                and story["episodes"]
+                and len(story["episodes"]) > 0
             ]
     except (OSError, json.JSONDecodeError) as error:
         app.logger.warning(
@@ -673,42 +1011,65 @@ def load_stories():
             error
         )
     return []
+# ==========================================================
+# PRÉSENTER LES CHOIX À LA FIN DE CHAQUE ÉPISODE
+# ==========================================================
 def format_story_episode(story, episode):
-    """Présente un épisode et les choix de continuation."""
+    """Affiche un épisode avec des indications adaptées."""
     text = episode.get("text", "")
     number = episode.get("number", 1)
     total = len(story.get("episodes", []))
     if number < total:
         return (
             text
-            + '\n\n➡️ Pour continuer, écris "Suivant" ou "Continue".'
-            + '\n📚 Pour changer d’histoire, écris "Une autre histoire".'
+            + "\n\n➡️ Pour continuer l'histoire, écris "
+            + "\"Suivant\" ou \"Continue\".\n"
+            + "📚 Pour choisir une autre histoire, écris "
+            + "\"Une autre histoire\"."
         )
     return (
         text
-        + "\n\n🎉 Tu as terminé cette histoire ! ❤️"
-        + "\nTu peux discuter avec M7 de cette leçon de vie."
+        + "\n\n🎉 Tu as terminé cette histoire ! ❤️\n"
+        + "Tu peux discuter avec M7 de cette leçon de vie."
     )
+# ==========================================================
+# GÉRER LE DÉBUT, LA SUITE ET LE CHANGEMENT D'HISTOIRE
+# ==========================================================
 def get_story_response(message):
-    """Gère les demandes et la progression des histoires."""
+    """Gère le début, la suite et le changement d'histoire."""
     normalized = normalize_text(message)
     continue_messages = {
-        "continue", "encore", "suivant", "la suite",
-        "continue stp", "continue s il te plait",
-        "continue l histoire", "raconte la suite",
-        "episode suivant", "episode 2", "episode 3"
+        "continue",
+        "encore",
+        "suivant",
+        "la suite",
+        "continue stp",
+        "continue s il te plait",
+        "continue l histoire",
+        "raconte la suite",
+        "episode suivant",
+        "episode 2",
+        "episode 3"
     }
     another_story_messages = {
-        "une autre", "une autre histoire", "autre histoire",
-        "raconte une autre histoire", "je veux une autre histoire",
+        "une autre",
+        "une autre histoire",
+        "autre histoire",
+        "raconte une autre histoire",
+        "je veux une autre histoire",
         "histoire suivante"
     }
     story_requests = {
-        "histoire m7", "raconte une histoire",
-        "raconte moi une histoire", "raconte moi une histoire m7",
-        "rencontre moi une histoire", "une histoire", "histoires m7"
+        "histoire m7",
+        "raconte une histoire",
+        "raconte moi une histoire",
+        "raconte moi une histoire m7",
+        "rencontre moi une histoire",
+        "une histoire",
+        "histoires m7"
     }
     stories = load_stories()
+    # Vérifier si la bibliothèque d'histoires est disponible.
     if not stories:
         if (
             normalized in continue_messages
@@ -721,6 +1082,7 @@ def get_story_response(message):
                 "d'histoires pour le moment."
             )
         return None
+    # Retrouver l'histoire actuellement racontée.
     current_id = session.get("current_story_id")
     current_story = next(
         (
@@ -729,6 +1091,7 @@ def get_story_response(message):
         ),
         None
     )
+    # L'utilisateur demande une autre histoire.
     if normalized in another_story_messages:
         other_stories = [
             story for story in stories
@@ -737,15 +1100,17 @@ def get_story_response(message):
         if other_stories:
             current_story = other_stories[0]
             session["current_story_id"] = current_story["id"]
-            session["current_episode"] = current_story["episodes"][0].get("number", 1)
+            session["current_episode"] = 1
             return format_story_episode(
                 current_story,
                 current_story["episodes"][0]
             )
         return (
-            "❤️ Pour le moment, je n'ai qu'une histoire disponible. "
+            "❤️ Pour le moment, je n'ai qu'une histoire en "
+            "plusieurs épisodes : Le rêve de Moussa.\n\n"
             "Veux-tu continuer cette histoire ou la recommencer ?"
         )
+    # L'utilisateur veut poursuivre l'histoire actuelle.
     if normalized in continue_messages and current_story:
         current_number = session.get("current_episode", 1)
         next_episode = next(
@@ -756,17 +1121,20 @@ def get_story_response(message):
             None
         )
         if next_episode:
-            session["current_episode"] = next_episode.get("number", current_number + 1)
+            session["current_episode"] = next_episode["number"]
             return format_story_episode(
                 current_story,
                 next_episode
             )
+        # L'histoire est terminée.
         session.pop("current_story_id", None)
         session.pop("current_episode", None)
         return (
             "🎉 Nous avons terminé cette histoire ensemble, "
-            "mon ami ! ❤️\n\nVeux-tu découvrir une autre histoire M7 ?"
+            "mon ami ! ❤️\n\n"
+            "Veux-tu découvrir une autre histoire M7 ?"
         )
+    # L'utilisateur demande une nouvelle histoire.
     is_story_request = (
         normalized in story_requests
         or (
@@ -779,12 +1147,11 @@ def get_story_response(message):
     )
     if is_story_request:
         current_story = stories[0]
-        first_episode = current_story["episodes"][0]
-        session["current_story_id"] = current_story.get("id")
-        session["current_episode"] = first_episode.get("number", 1)
+        session["current_story_id"] = current_story["id"]
+        session["current_episode"] = 1
         return format_story_episode(
             current_story,
-            first_episode
+            current_story["episodes"][0]
         )
     return None
 # ==========================================================
@@ -794,122 +1161,123 @@ def get_story_response(message):
 def home():
     """Affiche l'interface de M7."""
     template_path = os.path.join(
-        BASE_DIR, "templates", "index.html"
+        BASE_DIR,
+        "templates",
+        "index.html"
     )
     root_html_path = os.path.join(
-        BASE_DIR, "index.html"
+        BASE_DIR,
+        "index.html"
     )
     if os.path.isfile(template_path):
         return render_template("index.html")
     if os.path.isfile(root_html_path):
-        with open(root_html_path, "r", encoding="utf-8") as file:
-            return app.response_class(
-                file.read(),
-                mimetype="text/html"
-            )
+        with open(
+            root_html_path,
+            "r",
+            encoding="utf-8"
+        ) as file:
+            html = file.read()
+        return app.response_class(
+            html,
+            mimetype="text/html"
+        )
     return (
-        "M7 Assistant : fichier index.html introuvable.",
+        "M7 Assistant : fichier index.html introuvable. "
+        "Vérifie son emplacement dans le dépôt GitHub.",
         404
     )
+
 # ==========================================================
 # API DE DISCUSSION
 # ==========================================================
 @app.route("/api/chat", methods=["POST"])
 def chat_api():
-    """Reçoit un message et renvoie une réponse JSON."""
-    try:
-        data = request.get_json(silent=True) or {}
-        message = data.get("message", "")
-        if not isinstance(message, str):
-            return jsonify({
-                "reply": "Envoie-moi un message écrit, s'il te plaît. ❤️"
-            }), 400
-        message = message.strip()
-        if not message:
-            return create_chat_response(
-                "Je suis là, mon ami. ❤️ "
-                "Écris-moi ce que tu souhaites partager."
-            )
-        if len(message) > MAX_MESSAGE_LENGTH:
-            return create_chat_response(
-                "Ton message est un peu long, mon ami. ❤️ "
-                "Peux-tu le raccourcir pour que je puisse mieux "
-                "le comprendre ?"
-            )
-        normalized = normalize_text(message)
-        # 1. Histoires et épisodes.
-        story_reply = get_story_response(message)
-        if story_reply:
-            return create_chat_response(story_reply, message)
-        # 2. Identité et créateur.
-        if normalized in {
-            "qui es tu", "qui es tu m7", "tu es qui",
-            "quel est ton nom", "comment tu t appelles",
-            "presente toi", "parle moi de toi", "m7"
-        }:
-            return create_chat_response(
-                get_identity_response(), message
-            )
-        if normalized in {
-            "qui t a cree", "qui est ton createur",
-            "qui est derriere m7", "qui a cree m7",
-            "qui est cheikh", "cheikh"
-        }:
-            return create_chat_response(
-                get_creator_response(), message
-            )
-        # 3. Emojis envoyés seuls.
-        emoji_reply = get_emoji_response(message)
-        if emoji_reply:
-            return create_chat_response(emoji_reply, message)
-        # 4. Salutations et réponses courantes.
-        simple_reply = get_simple_response(message)
-        if simple_reply:
-            return create_chat_response(simple_reply, message)
-        # 5. Réponses courtes et contexte.
-        contextual_reply = get_contextual_response(message)
-        if contextual_reply:
-            return create_chat_response(
-                contextual_reply, message
-            )
-        # 6. Réactions liées au sujet de discussion.
-        followup_reply = get_followup_response(message)
-        if followup_reply:
-            return create_chat_response(
-                followup_reply, message
-            )
-        # 7. Recherche d'une réponse adaptée aux connaissances.
-        reply = get_topic_response(message)
-        if not reply:
-            reply = find_response(message)
-        # 8. Réponse de secours.
-        if not reply:
-            reply = fallback_response()
-        return create_chat_response(reply, message)
-    except Exception:
-        app.logger.exception(
-            "Erreur inattendue pendant le traitement d'un message M7."
-        )
+    """Reçoit un message et conserve le fil du dialogue."""
+    data = request.get_json(silent=True) or {}
+    message = data.get("message", "")
+    if not isinstance(message, str):
         return jsonify({
-            "reply": (
-                "Je rencontre un petit problème en préparant "
-                "ma réponse, mon ami. ❤️ Réessaie dans un instant."
-            )
-        }), 500
-def fallback_response():
-    """Répond lorsque M7 ne trouve pas de correspondance fiable."""
-    return (
-        "Je veux bien en discuter avec toi. ❤️ "
-        "Je ne suis pas encore certain de comprendre exactement "
-        "ce que tu souhaites.\n\n"
-        "Peux-tu me donner un peu plus de détails ? "
-        "Je vais essayer de mieux comprendre ton idée."
-    )
+            "reply": "Envoie-moi un message écrit, s'il te plaît. ❤️"
+        }), 400
+    message = message.strip()
+    if not message:
+        return create_chat_response(
+            "Je suis là, mon ami. ❤️ "
+            "Écris-moi ce que tu souhaites partager."
+        )
+    # 1. Gérer les histoires M7.
+    story_reply = get_story_response(message)
+    if story_reply:
+        return create_chat_response(story_reply, message)
+    # 2. Reconnaître les emojis.
+    emoji_reply = get_emoji_response(message)
+    if emoji_reply:
+        return create_chat_response(emoji_reply, message)
+    # 3. Normaliser le message.
+    normalized = normalize_text(message)
+    # 4. Répondre aux questions sur l'identité de M7.
+    if normalized in {
+        "qui es tu",
+        "qui es tu m7",
+        "tu es qui",
+        "quel est ton nom",
+        "comment tu t appelles",
+        "presente toi",
+        "parle moi de toi"
+    }:
+        return create_chat_response(
+            get_identity_response(),
+            message
+        )
+    # 5. Répondre aux questions sur le créateur.
+    if normalized in {
+        "qui t a cree",
+        "qui est ton createur",
+        "qui est derriere m7",
+        "qui est cheikh"
+    }:
+        return create_chat_response(
+            get_creator_response(),
+            message
+        )
+    # 6. Comprendre les idées exprimées dans la discussion.
+    followup_reply = get_followup_response(message)
+    if followup_reply:
+        return create_chat_response(
+            followup_reply,
+            message
+        )
+    # 7. Utiliser le contexte de la conversation.
+    contextual_reply = get_contextual_response(message)
+    if contextual_reply:
+        return create_chat_response(
+            contextual_reply,
+            message
+        )
+    # 8. Gérer les salutations et les messages courants.
+    simple_reply = get_simple_response(message)
+    if simple_reply:
+        return create_chat_response(
+            simple_reply,
+            message
+        )
+    # 9. Chercher une réponse liée au sujet.
+    reply = get_topic_response(message)
+    # 10. Chercher dans la bibliothèque de connaissances.
+    if not reply:
+        reply = find_response(message)
+    # 11. Répondre si aucune connaissance ne correspond.
+    if not reply:
+        reply = fallback_response()
+    # 12. Préparer la réponse et mémoriser le dialogue.
+    return create_chat_response(reply, message)
 # ==========================================================
 # VÉRIFICATION DU SERVEUR
 # ==========================================================
 @app.route("/health", methods=["GET"])
 def health_check():
+    """Vérifie que le serveur fonctionne."""
     return jsonify({
         "status": "ok",
         "application": "M7 Assistant"
