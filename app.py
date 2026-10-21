@@ -618,26 +618,17 @@ def get_simple_response(message):
         return (
             "Content que cela te plaise, mon ami ! 😊 "
             "Qu'est-ce qui t'a le plus plu ou fait réfléchir ?"
-        )
-    #  Celui-ci pourra les interpréter selon la discussion en cours.
-    if normalized in {
-        "oui", "oui merci", "d accord", "ok", "okay",
-        "bien sur", "exactement", "tout a fait",
-        "non", "pas vraiment", "pas trop", "non merci"
-    }: 
-     return None )
-            "D'accord, mon ami ! ❤️ Continuons ensemble. "
-            "Tu préfères parler de motivation, d'amitié, "
-            "d'amour ou découvrir une histoire M7 ?"
-        )
-    if normalized in {
-        "non", "pas vraiment"
-    }:
-        return (
-            "Pas de problème, mon ami. ❤️ "
-            "Dis-moi simplement ce que tu préfères."
-        )
-    return None
+        )    
+    # Laisser les réponses courtes au système contextuel.
+
+    # Celui-ci pourra les interpréter selon la discussion en cours.
+   if normalized in {
+       "oui", "oui merci", "d accord", "ok", "okay",
+       "bien sur", "exactement", "tout a fait",
+       "non", "pas vraiment", "pas trop", "non merci"
+   }:
+       return None
+   return None          
 # ==========================================================
 # MÉMOIRE DE SESSION
 # ==========================================================
