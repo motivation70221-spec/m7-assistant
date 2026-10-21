@@ -627,7 +627,6 @@ def get_simple_response(message):
         "bien sur", "exactement", "tout a fait",
         "non", "pas vraiment", "pas trop", "non merci"
        }:
-        return None
          return None
          ```
             "D'accord, mon ami ! ❤️ Continuons ensemble. "
