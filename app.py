@@ -557,7 +557,7 @@ def get_emoji_response(message):
 # ==========================================================
 # SALUTATIONS ET PETITS MESSAGES
 # ==========================================================
-def get_simple_response(message):
+ def get_simple_response(message):
     """Gère les salutations et les messages courants."""
     normalized = normalize_text(message)
     greetings = {
@@ -578,7 +578,6 @@ def get_simple_response(message):
             "Avec plaisir, mon ami ! ❤️ "
             "Tu peux continuer, je t'écoute."
         )
-     # Comprend les réponses positives sur l'état de la personne.
     if normalized in {
         "cv je vais bien et toi",
         "cv ca va et toi",
@@ -605,7 +604,6 @@ def get_simple_response(message):
             "Je suis prêt à discuter avec toi ! 😊 "
             "Et toi, comment te sens-tu aujourd'hui ?"
         )
-     # Réactions positives et appréciations.
     if normalized in {
         "c est cool",
         "c est genial",
@@ -618,17 +616,10 @@ def get_simple_response(message):
         return (
             "Content que cela te plaise, mon ami ! 😊 "
             "Qu'est-ce qui t'a le plus plu ou fait réfléchir ?"
-        )    
-    # Laisser les réponses courtes au système contextuel.
-
-    # Celui-ci pourra les interpréter selon la discussion en cours.
-   if normalized in {
-       "oui", "oui merci", "d accord", "ok", "okay",
-       "bien sur", "exactement", "tout a fait",
-       "non", "pas vraiment", "pas trop", "non merci"
-   }:
-       return None
-   return None          
+        )
+    # Les réponses courtes sont traitées par la mémoire
+    # contextuelle, selon le sujet de la conversation.
+    return None        
 # ==========================================================
 # MÉMOIRE DE SESSION
 # ==========================================================
