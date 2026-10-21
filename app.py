@@ -557,7 +557,7 @@ def get_emoji_response(message):
 # ==========================================================
 # SALUTATIONS ET PETITS MESSAGES
 # ==========================================================
- def get_simple_response(message):
+def get_simple_response(message):
     """Gère les salutations et les messages courants."""
     normalized = normalize_text(message)
     greetings = {
