@@ -1,0 +1,217 @@
+{
+“topic”: “amitie”,
+“start”: “question_principale”,
+“steps”: {
+“question_principale”: {
+“message”: “Mon ami ❤️, selon toi, quel est le signe le plus important d’une vraie amitié ?”,
+“choices”: [
+{
+“id”: “entraide”,
+“label”: “🤝 L’entraide”,
+“keywords”: [“aide”, “entraide”, “aider”, “soutenir”, “secourir”, “aider quelqu’un”],
+“next”: “entraide_1”
+},
+{
+“id”: “sincerite”,
+“label”: “❤️ La sincérité”,
+“keywords”: [“sincere”, “sincérité”, “verite”, “honnête”, “honnetete”, “franc”],
+“next”: “sincerite_1”
+},
+{
+“id”: “fidelite”,
+“label”: “🕊️ La fidélité”,
+“keywords”: [“fidele”, “fidélité”, “loyal”, “loyaute”, “trahir”, “trahison”],
+“next”: “fidelite_1”
+},
+{
+“id”: “ecoute”,
+“label”: “👂 L’écoute”,
+“keywords”: [“ecouter”, “écoute”, “comprendre”, “parler”, “confier”, “oreille”],
+“next”: “ecoute_1”
+}
+]
+},
+“entraide_1”: {
+“message”: “Tu as choisi l’entraide, mon ami ! 🤝 Un véritable ami ne reste pas indifférent quand tu traverses une période difficile. Il essaie de t’aider selon ses moyens. ❤️”,
+“choices”: [
+{
+“id”: “conseil”,
+“label”: “💡 Donner des conseils”,
+“keywords”: [“conseil”, “conseiller”, “solution”, “conseils”],
+“next”: “entraide_conseil”
+},
+{
+“id”: “presence”,
+“label”: “🫂 Être présent”,
+“keywords”: [“present”, “présence”, “rester”, “accompagner”, “cote”, “côté”],
+“next”: “entraide_presence”
+},
+{
+“id”: “argent”,
+“label”: “💰 Aider matériellement”,
+“keywords”: [“argent”, “materiel”, “matériel”, “financier”, “payer”, “donner”],
+“next”: “entraide_materielle”
+}
+]
+},
+“entraide_conseil”: {
+“message”: “Exactement ! 💡 Un bon conseil peut aider quelqu’un à trouver une solution. Mais un véritable ami doit aussi savoir écouter avant de conseiller. ❤️ À ton avis, faut-il toujours dire la vérité à son ami, même quand elle est difficile à entendre ?”,
+“choices”: [
+{
+“id”: “oui_verite”,
+“label”: “❤️ Oui, toujours être sincère”,
+“keywords”: [“oui”, “verite”, “vérité”, “sincere”, “sincère”, “honnete”, “honnête”],
+“next”: “sincerite_1”
+},
+{
+“id”: “avec_douceur”,
+“label”: “🤝 Oui, mais avec douceur”,
+“keywords”: [“doucement”, “douceur”, “respect”, “gentillesse”, “poliment”],
+“next”: “sincerite_1”
+}
+]
+},
+“entraide_presence”: {
+“message”: “Tu as raison ! 🫂 Parfois, rester aux côtés d’un ami est plus précieux que de longs discours. Une présence sincère peut lui redonner du courage. ❤️ Et si cet ami commet une erreur, comment devrais-tu réagir ?”,
+“choices”: [
+{
+“id”: “parler”,
+“label”: “🗣️ Lui parler avec respect”,
+“keywords”: [“parler”, “respect”, “expliquer”, “discuter”],
+“next”: “sincerite_1”
+},
+{
+“id”: “pardonner”,
+“label”: “💚 Lui pardonner”,
+“keywords”: [“pardonner”, “pardon”, “excuser”, “comprendre”],
+“next”: “fidelite_1”
+}
+]
+},
+“entraide_materielle”: {
+“message”: “Oui, mon ami ! 💰 Une aide matérielle peut soulager quelqu’un, mais l’amitié ne se mesure pas à l’argent. Même une personne qui n’a presque rien peut offrir son temps, son écoute et son soutien. ❤️ Pour toi, qu’est-ce qui compte le plus : les cadeaux ou la sincérité ?”,
+“choices”: [
+{
+“id”: “cadeaux”,
+“label”: “🎁 Les cadeaux”,
+“keywords”: [“cadeau”, “cadeaux”, “argent”, “materiel”, “matériel”],
+“next”: “sincerite_1”
+},
+{
+“id”: “sincerite”,
+“label”: “❤️ La sincérité”,
+“keywords”: [“sincere”, “sincérité”, “coeur”, “cœur”, “verite”, “vérité”],
+“next”: “sincerite_1”
+}
+]
+},
+“sincerite_1”: {
+“message”: “Tu as choisi la sincérité ! ❤️ Pour moi, une amitié solide repose sur la confiance. Un véritable ami évite les mensonges et sait parler honnêtement sans chercher à blesser. 🤝 Selon toi, peut-on rester amis après un mensonge ?”,
+“choices”: [
+{
+“id”: “pardonner_mensonge”,
+“label”: “💚 Oui, si la personne regrette”,
+“keywords”: [“oui”, “pardonner”, “regret”, “regrette”, “excuse”, “excuses”],
+“next”: “sincerite_pardon”
+},
+{
+“id”: “difficile”,
+“label”: “💔 C’est difficile de refaire confiance”,
+“keywords”: [“non”, “difficile”, “confiance”, “trahi”, “trahison”, “jamais”],
+“next”: “sincerite_confiance”
+}
+]
+},
+“sincerite_pardon”: {
+“message”: “C’est une belle réflexion ! 💚 Tout le monde peut commettre une erreur. Le pardon peut réparer une amitié, mais il faut aussi des actes sincères pour reconstruire la confiance. ❤️ À ton avis, que doit faire une personne pour montrer qu’elle regrette vraiment ?”,
+“choices”: [
+{
+“id”: “excuses”,
+“label”: “🙏 Présenter des excuses”,
+“keywords”: [“excuse”, “excuses”, “pardon”, “demander pardon”],
+“next”: “fidelite_1”
+},
+{
+“id”: “actes”,
+“label”: “🤝 Changer de comportement”,
+“keywords”: [“changer”, “actes”, “comportement”, “preuve”, “agir”],
+“next”: “fidelite_1”
+}
+]
+},
+“sincerite_confiance”: {
+“message”: “Je comprends ton point de vue. 💔 Quand la confiance est brisée, elle peut prendre du temps à revenir. Les paroles comptent, mais les actes réguliers comptent encore plus. ❤️ Pour toi, qu’est-ce qui montre qu’un ami reste fidèle ?”,
+“choices”: [
+{
+“id”: “presence_fidele”,
+“label”: “🫂 Il reste présent dans les difficultés”,
+“keywords”: [“present”, “présent”, “difficulte”, “difficulté”, “soutien”, “aide”],
+“next”: “fidelite_1”
+},
+{
+“id”: “respect_fidele”,
+“label”: “🤝 Il respecte ses engagements”,
+“keywords”: [“respect”, “promesse”, “engagement”, “parole”, “loyal”],
+“next”: “fidelite_1”
+}
+]
+},
+“fidelite_1”: {
+“message”: “La fidélité est précieuse ! 🕊️ Un ami fidèle ne t’abandonne pas uniquement parce que tu traverses une période difficile. Cela ne signifie pas qu’il doit accepter tous tes comportements : une vraie amitié garde aussi des limites et du respect. ❤️ Selon toi, un ami fidèle doit-il toujours être d’accord avec toi ?”,
+“choices”: [
+{
+“id”: “pas_toujours”,
+“label”: “💡 Non, il peut me corriger”,
+“keywords”: [“non”, “corriger”, “conseiller”, “verite”, “vérité”, “désaccord”],
+“next”: “ecoute_1”
+},
+{
+“id”: “respect”,
+“label”: “❤️ Il doit me respecter”,
+“keywords”: [“respect”, “respecter”, “comprendre”, “écouter”, “ecouter”],
+“next”: “ecoute_1”
+}
+]
+},
+“ecoute_1”: {
+“message”: “Tu touches un point important ! 👂 Écouter un ami, c’est lui laisser la possibilité de s’exprimer sans le juger trop vite. Parfois, il a besoin d’être compris avant de recevoir un conseil. ❤️ Quand un ami te confie un secret, que dois-tu faire ?”,
+“choices”: [
+{
+“id”: “garder_secret”,
+“label”: “🤐 Garder son secret”,
+“keywords”: [“secret”, “garder”, “discretion”, “discrétion”, “confidentialite”, “confidentialité”],
+“next”: “fin_amitie”
+},
+{
+“id”: “aider_secret”,
+“label”: “🤝 Chercher de l’aide s’il est en danger”,
+“keywords”: [“danger”, “aide”, “proteger”, “protéger”, “adulte”, “securite”, “sécurité”],
+“next”: “fin_amitie”
+}
+]
+},
+“fin_amitie”: {
+“message”: “Merci pour cette belle discussion, mon ami ! ❤️🤝 Nous avons parlé d’entraide, de sincérité, de fidélité et d’écoute. Une amitié solide se construit avec le respect, la confiance et des actes sincères. Personne n’est parfait : l’essentiel est d’apprendre à mieux se comprendre et à se soutenir. 🌟 Quel autre sujet aimerais-tu explorer ?”,
+“choices”: [
+{
+“id”: “confiance”,
+“label”: “🌟 La confiance en soi”,
+“keywords”: [“confiance en soi”, “courage”, “oser”, “estime de soi”],
+“next”: “question_principale”
+},
+{
+“id”: “amour”,
+“label”: “❤️ Les relations amoureuses”,
+“keywords”: [“amour”, “couple”, “relation”, “coeur”, “cœur”],
+“next”: “question_principale”
+},
+{
+“id”: “amitie”,
+“label”: “🤝 Continuer sur l’amitié”,
+“keywords”: [“amitie”, “amitié”, “ami”, “amis”],
+“next”: “question_principale”
+}
+]
+}
+}
+}
