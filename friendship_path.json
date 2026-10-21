@@ -1,211 +1,114 @@
 {
-“topic”: “amitie”,
-“start”: “question_principale”,
-“steps”: {
-“question_principale”: {
-“message”: “❤️ Mon ami, selon toi, quel est le signe le plus important d’une vraie amitié ?”,
-“choices”: [
-{
-“id”: “entraide”,
-“label”: “🤝 L’entraide”,
-“keywords”: [“aide”, “entraide”, “aider”, “soutenir”, “secourir”, “entraider”],
-“next”: “entraide_1”
-},
-{
-“id”: “sincerite”,
-“label”: “❤️ La sincérité”,
-“keywords”: [“sincere”, “sincerite”, “verite”, “honnete”, “honnetete”, “franc”],
-“next”: “sincerite_1”
-},
-{
-“id”: “fidelite”,
-“label”: “🕊️ La fidélité”,
-“keywords”: [“fidele”, “fidelite”, “loyal”, “loyaute”, “trahison”, “confiance”],
-“next”: “fidelite_1”
-},
-{
-“id”: “ecoute”,
-“label”: “👂 L’écoute”,
-“keywords”: [“ecouter”, “ecoute”, “comprendre”, “parler”, “confier”, “oreille”],
-“next”: “ecoute_1”
-}
-]
-},
-“entraide_1”: {
-“message”: “🤝 Tu as choisi l’entraide. Un véritable ami ne se contente pas de sourire avec toi quand tout va bien : il essaie aussi d’être présent dans les moments difficiles. Pour toi, comment un ami doit-il aider quelqu’un qui traverse une épreuve ?”,
-“choices”: [
-{
-“id”: “presence”,
-“label”: “❤️ Être présent et écouter”,
-“keywords”: [“presence”, “present”, “ecouter”, “ecoute”, “soutien moral”, “accompagner”],
-“next”: “entraide_presence”
-},
-{
-“id”: “conseil”,
-“label”: “🧠 Donner de bons conseils”,
-“keywords”: [“conseil”, “conseiller”, “solution”, “conseils”, “orienter”],
-“next”: “entraide_conseil”
-},
-{
-“id”: “materiel”,
-“label”: “🎁 Aider concrètement”,
-“keywords”: [“argent”, “materiel”, “nourriture”, “payer”, “donner”, “aide concrete”],
-“next”: “entraide_materielle”
-}
-]
-},
-“entraide_presence”: {
-“message”: “❤️ Parfois, une présence sincère vaut plus que de longs discours. Écouter sans juger peut soulager une personne qui souffre. Et toi, quand tu as un problème, arrives-tu facilement à te confier à un ami ?”,
-“choices”: [
-{
-“id”: “oui”,
-“label”: “😊 Oui, je me confie facilement”,
-“keywords”: [“oui”, “facilement”, “je me confie”, “je parle”, “j’ai confiance”],
-“next”: “fin_amitie”
-},
-{
-“id”: “non”,
-“label”: “🤐 Non, je garde souvent tout pour moi”,
-“keywords”: [“non”, “jamais”, “difficile”, “je garde”, “je me tais”, “peur”],
-“next”: “fin_amitie”
-}
-]
-},
-“entraide_conseil”: {
-“message”: “🧠 De bons conseils peuvent aider quelqu’un à retrouver son chemin. Mais un véritable ami doit aussi respecter les décisions de l’autre. Penses-tu qu’un ami doit toujours dire la vérité, même lorsqu’elle risque de blesser ?”,
-“choices”: [
-{
-“id”: “verite”,
-“label”: “❤️ Oui, mais avec bienveillance”,
-“keywords”: [“oui”, “verite”, “franchise”, “honnetete”, “bienveillance”],
-“next”: “sincerite_1”
-},
-{
-“id”: “prudence”,
-“label”: “🤝 Il faut parfois choisir ses mots”,
-“keywords”: [“non”, “prudence”, “doucement”, “choisir ses mots”, “sensibilite”],
-“next”: “fin_amitie”
-}
-]
-},
-“entraide_materielle”: {
-“message”: “🎁 Aider concrètement est une belle preuve de solidarité. Mais l’amitié ne devrait pas dépendre de l’argent ou des cadeaux. Selon toi, peut-on rester de vrais amis même lorsqu’on n’a rien à offrir matériellement ?”,
-“choices”: [
-{
-“id”: “oui”,
-“label”: “❤️ Oui, l’amitié va au-delà de l’argent”,
-“keywords”: [“oui”, “amitie”, “coeur”, “respect”, “presence”, “sincerite”],
-“next”: “fin_amitie”
-},
-{
-“id”: “non”,
-“label”: “🤔 Les actes matériels comptent beaucoup”,
-“keywords”: [“non”, “argent”, “materiel”, “cadeaux”, “actes”],
-“next”: “fin_amitie”
-}
-]
-},
-“sincerite_1”: {
-“message”: “❤️ Tu privilégies la sincérité. Une amitié solide a besoin de vérité, de respect et de confiance. Mais si un ami te ment et regrette sincèrement son geste, penses-tu qu’il mérite une seconde chance ?”,
-“choices”: [
-{
-“id”: “pardon”,
-“label”: “🕊️ Oui, s’il reconnaît son erreur”,
-“keywords”: [“oui”, “pardon”, “pardonner”, “seconde chance”, “regret”, “repentir”],
-“next”: “sincerite_pardon”
-},
-{
-“id”: “confiance”,
-“label”: “💔 Non, la confiance est difficile à retrouver”,
-“keywords”: [“non”, “confiance”, “trahir”, “trahison”, “mensonge”, “difficile”],
-“next”: “sincerite_confiance”
-}
-]
-},
-“sincerite_pardon”: {
-“message”: “🕊️ Pardonner peut permettre de reconstruire une relation, mais cela ne signifie pas oublier immédiatement. La confiance se rétablit grâce aux actes et au temps. Pour toi, qu’est-ce qui prouve le mieux qu’une personne a vraiment changé ?”,
-“choices”: [
-{
-“id”: “actes”,
-“label”: “💪 Ses actes au quotidien”,
-“keywords”: [“actes”, “actions”, “comportement”, “efforts”, “changement”],
-“next”: “fin_amitie”
-},
-{
-“id”: “paroles”,
-“label”: “💬 Ses paroles et ses excuses”,
-“keywords”: [“paroles”, “excuses”, “promesses”, “demande pardon”],
-“next”: “fin_amitie”
-}
-]
-},
-“sincerite_confiance”: {
-“message”: “💔 Tu as raison de prendre la confiance au sérieux. Pardonner ne signifie pas être obligé de retrouver immédiatement la même proximité. On peut souhaiter du bien à quelqu’un tout en posant des limites. Penses-tu qu’une amitié peut survivre à une grande déception ?”,
-“choices”: [
-{
-“id”: “survivre”,
-“label”: “❤️ Oui, si les deux font des efforts”,
-“keywords”: [“oui”, “efforts”, “changer”, “reconstruire”, “pardon”],
-“next”: “fin_amitie”
-},
-{
-“id”: “difficile”,
-“label”: “💔 Parfois, la blessure est trop profonde”,
-“keywords”: [“non”, “blessure”, “souffrance”, “impossible”, “trop profond”],
-“next”: “fin_amitie”
-}
-]
-},
-“fidelite_1”: {
-“message”: “🕊️ La fidélité, c’est rester loyal et ne pas abandonner quelqu’un uniquement parce que sa situation devient difficile. Mais être fidèle signifie-t-il, selon toi, devoir toujours être d’accord avec son ami ?”,
-“choices”: [
-{
-“id”: “desaccord”,
-“label”: “🧠 Non, on peut être loyal et ne pas être d’accord”,
-“keywords”: [“non”, “desaccord”, “verite”, “conseiller”, “avis different”],
-“next”: “fin_amitie”
-},
-{
-“id”: “soutien”,
-“label”: “🤝 Il faut surtout rester à ses côtés”,
-“keywords”: [“oui”, “soutenir”, “presence”, “rester”, “loyal”],
-“next”: “fin_amitie”
-}
-]
-},
-“ecoute_1”: {
-“message”: “👂 Être écouté sans être jugé est précieux. Parfois, une personne n’attend pas une solution : elle a simplement besoin de parler. Quand un ami te raconte un problème, préfères-tu l’écouter ou lui donner immédiatement des conseils ?”,
-“choices”: [
-{
-“id”: “ecouter”,
-“label”: “❤️ L’écouter d’abord”,
-“keywords”: [“ecouter”, “ecoute”, “d’abord”, “parler”, “comprendre”],
-“next”: “fin_amitie”
-},
-{
-“id”: “conseiller”,
-“label”: “🧠 Lui proposer des solutions”,
-“keywords”: [“conseil”, “conseiller”, “solution”, “resoudre”, “aider”],
-“next”: “entraide_conseil”
-}
-]
-},
-“fin_amitie”: {
-“message”: “❤️ Merci d’avoir partagé ton point de vue avec M7. Une belle amitié repose souvent sur plusieurs qualités : la sincérité, l’écoute, la loyauté et l’entraide. Personne n’est parfait, mais nous pouvons tous apprendre à mieux traiter les personnes qui comptent pour nous. 😊”,
-“choices”: [
-{
-“id”: “continuer”,
-“label”: “💬 Continuer à parler d’amitié”,
-“keywords”: [“continuer”, “encore”, “amitie”, “question”, “parler”],
-“next”: “question_principale”
-},
-{
-“id”: “autre”,
-“label”: “🌟 Parler d’un autre sujet”,
-“keywords”: [“autre”, “sujet”, “changer”, “motivation”, “amour”],
-“next”: “question_principale”
-}
-]
-}
-}
+  "topic": "amitie",
+  "start": "question_principale",
+  "steps": {
+    "question_principale": {
+      "message": "❤️ Mon ami, selon toi, quel est le signe le plus important d’une vraie amitié ?",
+      "choices": [
+        {
+          "id": "entraide",
+          "label": "🤝 L’entraide",
+          "keywords": ["entraide", "aide", "aider", "soutenir"],
+          "next": "entraide"
+        },
+        {
+          "id": "sincerite",
+          "label": "❤️ La sincérité",
+          "keywords": ["sincerite", "sincere", "verite", "honnete", "franc"],
+          "next": "sincerite"
+        },
+        {
+          "id": "fidelite",
+          "label": "🕊️ La fidélité",
+          "keywords": ["fidelite", "fidele", "loyal", "loyaute"],
+          "next": "fidelite"
+        },
+        {
+          "id": "ecoute",
+          "label": "👂 L’écoute",
+          "keywords": ["ecoute", "ecouter", "comprendre", "confier"],
+          "next": "ecoute"
+        }
+      ]
+    },
+    "entraide": {
+      "message": "🤝 L’entraide est une belle preuve d’amitié. Un véritable ami essaie d’être présent dans les moments difficiles. Pour toi, comment doit-il aider son ami ?",
+      "choices": [
+        {
+          "id": "presence",
+          "label": "❤️ Être présent et écouter",
+          "keywords": ["presence", "present", "ecouter", "ecoute"],
+          "next": "fin"
+        },
+        {
+          "id": "conseil",
+          "label": "🧠 Donner des conseils",
+          "keywords": ["conseil", "conseiller", "solution"],
+          "next": "fin"
+        }
+      ]
+    },
+    "sincerite": {
+      "message": "❤️ La sincérité permet de construire la confiance. Mais si un ami te ment et regrette sincèrement son erreur, pourrais-tu lui pardonner ?",
+      "choices": [
+        {
+          "id": "pardon",
+          "label": "🕊️ Oui, s’il regrette vraiment",
+          "keywords": ["oui", "pardon", "pardonner", "regret"],
+          "next": "fin"
+        },
+        {
+          "id": "confiance",
+          "label": "💔 La confiance est difficile à retrouver",
+          "keywords": ["non", "confiance", "trahison", "mensonge"],
+          "next": "fin"
+        }
+      ]
+    },
+    "fidelite": {
+      "message": "🕊️ La fidélité signifie rester loyal même lorsque les choses deviennent difficiles. Selon toi, un véritable ami doit-il aussi savoir dire la vérité lorsqu’il n’est pas d’accord ?",
+      "choices": [
+        {
+          "id": "verite",
+          "label": "❤️ Oui, avec respect",
+          "keywords": ["oui", "verite", "respect", "franchise"],
+          "next": "fin"
+        },
+        {
+          "id": "soutien",
+          "label": "🤝 Il doit surtout soutenir son ami",
+          "keywords": ["soutenir", "aider", "presence"],
+          "next": "fin"
+        }
+      ]
+    },
+    "ecoute": {
+      "message": "👂 Savoir écouter est précieux. Parfois, une personne veut simplement être comprise, sans recevoir immédiatement de conseils. Quand un ami souffre, préfères-tu l’écouter ou lui proposer des solutions ?",
+      "choices": [
+        {
+          "id": "ecouter",
+          "label": "❤️ L’écouter d’abord",
+          "keywords": ["ecouter", "ecoute", "comprendre"],
+          "next": "fin"
+        },
+        {
+          "id": "solutions",
+          "label": "🧠 Chercher des solutions",
+          "keywords": ["solution", "conseil", "resoudre", "aider"],
+          "next": "fin"
+        }
+      ]
+    },
+    "fin": {
+      "message": "❤️ Merci de partager ton point de vue avec M7. L’amitié se construit avec la sincérité, la loyauté, l’écoute et l’entraide. Chaque expérience peut nous apprendre à devenir de meilleurs amis. 😊",
+      "choices": [
+        {
+          "id": "recommencer",
+          "label": "💬 Recommencer la discussion sur l’amitié",
+          "keywords": ["recommencer", "continuer", "amitie", "encore"],
+          "next": "question_principale"
+        }
+      ]
+    }
+  }
 }
