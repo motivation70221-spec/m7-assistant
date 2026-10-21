@@ -1174,6 +1174,169 @@ def home():
     )
 
 # ==========================================================
+# MOTEUR DE PARCOURS DE CONVERSATION M7
+# ==========================================================
+
+def load_friendship_path():
+    """Charge le parcours de discussion sur l'amitié."""
+    filepath = os.path.join(
+        BASE_DIR,
+        "friendship_path.json"
+    )
+
+    try:
+        with open(filepath, "r", encoding="utf-8") as file:
+            path = json.load(file)
+
+        if (
+            isinstance(path, dict)
+            and isinstance(path.get("steps"), dict)
+            and path.get("start") in path["steps"]
+        ):
+            return path
+
+    except (OSError, json.JSONDecodeError) as error:
+        app.logger.warning(
+            "Impossible de charger le parcours d'amitié : %s",
+            error
+        )
+
+    return None
+
+
+def format_friendship_step(path, step_id):
+    """Prépare une étape et affiche ses choix."""
+    step = path["steps"].get(step_id)
+
+    if not step:
+        session.pop("friendship_step", None)
+        return None
+
+    session["friendship_step"] = step_id
+
+    reply = step.get("message", "")
+
+    choices = step.get("choices", [])
+
+    if choices:
+        reply += "\n\n"
+        reply += "💬 Choisis une réponse ou exprime-toi avec tes mots :\n"
+
+        for choice in choices:
+            reply += "\n" + choice.get("label", "")
+
+    return reply
+
+
+def get_friendship_response(message):
+    """
+    Suit le parcours de discussion sur l'amitié.
+    Mémorise l'étape et dirige vers la branche choisie.
+    """
+    path = load_friendship_path()
+
+    if not path:
+        return None
+
+    normalized = normalize_text(message)
+
+    current_step_id = session.get("friendship_step")
+
+    # Détecter le début d'une discussion sur l'amitié.
+    friendship_words = {
+        "amitie", "ami", "amis", "amie"
+    }
+
+    if not current_step_id:
+        words = set(normalized.split())
+
+        if not words.intersection(friendship_words):
+            return None
+
+        return format_friendship_step(
+            path,
+            path["start"]
+        )
+
+    # Retrouver l'étape actuelle.
+    current_step = path["steps"].get(current_step_id)
+
+    if not current_step:
+        session.pop("friendship_step", None)
+        return None
+
+    # Chercher le choix qui correspond au message.
+    best_choice = None
+    best_score = 0
+
+    for choice in current_step.get("choices", []):
+        keywords = choice.get("keywords", [])
+
+        for keyword in keywords:
+            clean_keyword = normalize_text(keyword)
+
+            if not clean_keyword:
+                continue
+
+            # Correspondance avec une phrase complète.
+            if normalized == clean_keyword:
+                score = 100 + len(clean_keyword)
+
+            # Correspondance avec une expression dans la phrase.
+            elif (
+                len(clean_keyword) >= 4
+                and clean_keyword in normalized.split()
+            ):
+                score = 50 + len(clean_keyword)
+
+            elif (
+                len(clean_keyword) >= 5
+                and clean_keyword in normalized
+            ):
+                score = 20 + len(clean_keyword)
+
+            else:
+                score = 0
+
+            if score > best_score:
+                best_score = score
+                best_choice = choice
+
+    # Si le choix n'est pas assez clair, garder la même étape.
+    if not best_choice or best_score < 50:
+        reply = (
+            "Je t'écoute, mon ami ! ❤️ "
+            "Pour continuer notre discussion, tu peux "
+            "choisir l'une des réponses proposées ou "
+            "reformuler ton idée."
+        )
+
+        choices = current_step.get("choices", [])
+
+        if choices:
+            reply += "\n\n"
+
+            for choice in choices:
+                reply += "\n" + choice.get("label", "")
+
+        return reply
+
+    # Passer à la prochaine étape du parcours.
+    next_step_id = best_choice.get("next")
+
+    if next_step_id not in path["steps"]:
+        session.pop("friendship_step", None)
+        return (
+            "Merci pour ta réponse, mon ami ! ❤️ "
+            "Continuons à discuter ensemble."
+        )
+
+    return format_friendship_step(
+        path,
+        next_step_id
+    )
+
+# ==========================================================
 # API DE DISCUSSION
 # ==========================================================
 @app.route("/api/chat", methods=["POST"])
