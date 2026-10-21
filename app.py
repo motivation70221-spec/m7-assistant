@@ -1389,6 +1389,13 @@ def chat_api():
             get_creator_response(),
             message
         )
+    # 6. Suivre le parcours structuré de discussion.
+    friendship_reply = get_friendship_response(message)
+    if friendship_reply:
+        return create_chat_response(
+            friendship_reply,
+            message
+        )
     # 6. Comprendre les idées exprimées dans la discussion.
     followup_reply = get_followup_response(message)
     if followup_reply:
