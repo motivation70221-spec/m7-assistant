@@ -646,7 +646,7 @@ def get_contextual_response(message):
         "tout a fait"
     }
 
-      if normalized in positive_answers:
+    if normalized in positive_answers:
         topic_questions = {
             "amitie": (
                 "Tu sembles d'accord, mon ami ! ❤️ "
@@ -696,7 +696,7 @@ def get_contextual_response(message):
             "Qu'aimerais-tu approfondir dans ce sujet ?"
         )
 
-        # Mémoriser les quatre choix proposés sur l'amitié.
+        # Mémoriser les choix proposés sur l'amitié.
         if last_topic == "amitie":
             session["pending_context_choices"] = [
                 "reconnaitre un ami sincere",
