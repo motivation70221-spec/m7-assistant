@@ -8,104 +8,258 @@
         {
           "id": "entraide",
           "label": "🤝 L’entraide",
-          "keywords": ["entraide", "aide", "aider", "soutenir"],
+          "keywords": ["entraide", "aider", "soutenir"],
           "next": "entraide"
         },
         {
           "id": "sincerite",
           "label": "❤️ La sincérité",
-          "keywords": ["sincerite", "sincere", "verite", "honnete", "franc"],
+          "keywords": ["sincerite", "sincere", "verite", "honnete"],
           "next": "sincerite"
         },
         {
           "id": "fidelite",
           "label": "🕊️ La fidélité",
-          "keywords": ["fidelite", "fidele", "loyal", "loyaute"],
+          "keywords": ["fidelite", "fidele", "loyaute", "loyal"],
           "next": "fidelite"
         },
         {
           "id": "ecoute",
           "label": "👂 L’écoute",
-          "keywords": ["ecoute", "ecouter", "comprendre", "confier"],
+          "keywords": ["ecoute", "ecouter", "comprendre"],
           "next": "ecoute"
         }
       ]
     },
     "entraide": {
-      "message": "🤝 L’entraide est une belle preuve d’amitié. Un véritable ami essaie d’être présent dans les moments difficiles. Pour toi, comment doit-il aider son ami ?",
+      "message": "🤝 L’entraide est une belle preuve d’amitié. Un véritable ami essaie d’être présent dans les moments difficiles. Comment préfères-tu aider un ami qui souffre ?",
       "choices": [
         {
           "id": "presence",
           "label": "❤️ Être présent et écouter",
           "keywords": ["presence", "present", "ecouter", "ecoute"],
-          "next": "fin"
+          "next": "presence"
         },
         {
           "id": "conseil",
           "label": "🧠 Donner des conseils",
           "keywords": ["conseil", "conseiller", "solution"],
-          "next": "fin"
+          "next": "conseil"
         }
       ]
     },
     "sincerite": {
-      "message": "❤️ La sincérité permet de construire la confiance. Mais si un ami te ment et regrette sincèrement son erreur, pourrais-tu lui pardonner ?",
+      "message": "❤️ La sincérité permet de construire la confiance. Si un ami te ment, mais regrette sincèrement son erreur, pourrais-tu lui pardonner ?",
       "choices": [
         {
           "id": "pardon",
           "label": "🕊️ Oui, s’il regrette vraiment",
-          "keywords": ["oui", "pardon", "pardonner", "regret"],
-          "next": "fin"
+          "keywords": ["pardonner", "pardon", "regrette"],
+          "next": "pardon"
         },
         {
           "id": "confiance",
           "label": "💔 La confiance est difficile à retrouver",
-          "keywords": ["non", "confiance", "trahison", "mensonge"],
-          "next": "fin"
+          "keywords": ["confiance", "trahison", "mensonge"],
+          "next": "confiance"
         }
       ]
     },
     "fidelite": {
-      "message": "🕊️ La fidélité signifie rester loyal même lorsque les choses deviennent difficiles. Selon toi, un véritable ami doit-il aussi savoir dire la vérité lorsqu’il n’est pas d’accord ?",
+      "message": "🕊️ La fidélité signifie rester loyal même lorsque les choses deviennent difficiles. Un véritable ami doit-il aussi savoir dire la vérité lorsqu’il n’est pas d’accord avec toi ?",
       "choices": [
         {
           "id": "verite",
           "label": "❤️ Oui, avec respect",
-          "keywords": ["oui", "verite", "respect", "franchise"],
-          "next": "fin"
+          "keywords": ["verite", "respect", "franchise"],
+          "next": "verite"
         },
         {
           "id": "soutien",
           "label": "🤝 Il doit surtout soutenir son ami",
           "keywords": ["soutenir", "aider", "presence"],
-          "next": "fin"
+          "next": "soutien"
         }
       ]
     },
     "ecoute": {
-      "message": "👂 Savoir écouter est précieux. Parfois, une personne veut simplement être comprise, sans recevoir immédiatement de conseils. Quand un ami souffre, préfères-tu l’écouter ou lui proposer des solutions ?",
+      "message": "👂 Savoir écouter est précieux. Quand un ami souffre, il a parfois besoin d’être compris avant de recevoir des conseils. Préfères-tu l’écouter d’abord ou chercher immédiatement une solution ?",
       "choices": [
         {
           "id": "ecouter",
           "label": "❤️ L’écouter d’abord",
           "keywords": ["ecouter", "ecoute", "comprendre"],
-          "next": "fin"
+          "next": "ecouter"
         },
         {
           "id": "solutions",
           "label": "🧠 Chercher des solutions",
-          "keywords": ["solution", "conseil", "resoudre", "aider"],
-          "next": "fin"
+          "keywords": ["solution", "conseil", "resoudre"],
+          "next": "solutions"
         }
       ]
     },
-    "fin": {
-      "message": "❤️ Merci de partager ton point de vue avec M7. L’amitié se construit avec la sincérité, la loyauté, l’écoute et l’entraide. Chaque expérience peut nous apprendre à devenir de meilleurs amis. 😊",
+    "presence": {
+      "message": "❤️ Être présent peut aider un ami à se sentir moins seul. Mais comment réagirais-tu si ton ami ne voulait pas parler de son problème ?",
       "choices": [
         {
+          "id": "respecter",
+          "label": "🤝 Respecter son silence",
+          "keywords": ["silence", "respecter", "patience"],
+          "next": "discussion_suite"
+        },
+        {
+          "id": "encourager",
+          "label": "❤️ L’encourager à se confier",
+          "keywords": ["encourager", "confier", "parler"],
+          "next": "discussion_suite"
+        }
+      ]
+    },
+    "conseil": {
+      "message": "🧠 Un bon conseil peut aider, surtout lorsqu’il est donné avec douceur. Penses-tu qu’il faut écouter un ami avant de lui proposer une solution ?",
+      "choices": [
+        {
+          "id": "ecouter_avant",
+          "label": "👂 Oui, il faut d’abord l’écouter",
+          "keywords": ["ecouter", "ecoute", "comprendre"],
+          "next": "discussion_suite"
+        },
+        {
+          "id": "agir",
+          "label": "🤝 Il faut parfois agir rapidement",
+          "keywords": ["agir", "rapidement", "urgence"],
+          "next": "discussion_suite"
+        }
+      ]
+    },
+    "pardon": {
+      "message": "🕊️ Pardonner peut permettre de reconstruire une amitié. Selon toi, que doit faire un ami pour regagner la confiance après une erreur ?",
+      "choices": [
+        {
+          "id": "changer",
+          "label": "❤️ Montrer qu’il a changé",
+          "keywords": ["changer", "changement", "efforts"],
+          "next": "discussion_suite"
+        },
+        {
+          "id": "temps",
+          "label": "⏳ Laisser du temps",
+          "keywords": ["temps", "patience", "attendre"],
+          "next": "discussion_suite"
+        }
+      ]
+    },
+    "confiance": {
+      "message": "💔 Quand la confiance est blessée, il peut être difficile de retrouver la même relation. Penses-tu que les actes peuvent parfois réparer ce que les paroles ont abîmé ?",
+      "choices": [
+        {
+          "id": "actes",
+          "label": "❤️ Oui, les actes comptent",
+          "keywords": ["actes", "actions", "prouver"],
+          "next": "discussion_suite"
+        },
+        {
+          "id": "difficile",
+          "label": "🤔 Cela dépend de la blessure",
+          "keywords": ["depend", "blessure", "difficile"],
+          "next": "discussion_suite"
+        }
+      ]
+    },
+    "verite": {
+      "message": "❤️ Dire la vérité avec respect peut renforcer une amitié. Comment parlerais-tu à un ami qui a commis une erreur sans vouloir le blesser ?",
+      "choices": [
+        {
+          "id": "douceur",
+          "label": "🤝 Avec douceur et respect",
+          "keywords": ["douceur", "respect", "calmement"],
+          "next": "discussion_suite"
+        },
+        {
+          "id": "franchise",
+          "label": "🗣️ Avec franchise",
+          "keywords": ["franchise", "franchement", "honnetement"],
+          "next": "discussion_suite"
+        }
+      ]
+    },
+    "soutien": {
+      "message": "🤝 Soutenir un ami ne signifie pas forcément approuver tous ses choix. Si tu penses qu’il se trompe, comment pourrais-tu l’aider sans lui imposer ton opinion ?",
+      "choices": [
+        {
+          "id": "dialogue",
+          "label": "❤️ Dialoguer avec lui",
+          "keywords": ["dialogue", "discuter", "parler"],
+          "next": "discussion_suite"
+        },
+        {
+          "id": "ecoute_libre",
+          "label": "👂 Écouter son point de vue",
+          "keywords": ["ecouter", "ecoute", "point de vue"],
+          "next": "discussion_suite"
+        }
+      ]
+    },
+    "ecouter": {
+      "message": "❤️ Écouter sans juger peut déjà apporter beaucoup de réconfort. Mais si ton ami te demande un conseil, comment ferais-tu pour l’aider sans décider à sa place ?",
+      "choices": [
+        {
+          "id": "proposer",
+          "label": "🤝 Lui proposer des possibilités",
+          "keywords": ["proposer", "possibilites", "solutions"],
+          "next": "discussion_suite"
+        },
+        {
+          "id": "laisser_choisir",
+          "label": "🕊️ Le laisser choisir",
+          "keywords": ["choisir", "decider", "liberte"],
+          "next": "discussion_suite"
+        }
+      ]
+    },
+    "solutions": {
+      "message": "🧠 Chercher une solution ensemble peut être utile. Mais avant de conseiller un ami, ne faudrait-il pas comprendre ce qu’il ressent et ce dont il a besoin ?",
+      "choices": [
+        {
+          "id": "comprendre",
+          "label": "❤️ Oui, comprendre d’abord",
+          "keywords": ["comprendre", "ressent", "besoin"],
+          "next": "discussion_suite"
+        },
+        {
+          "id": "essayer",
+          "label": "🤝 Essayer de résoudre le problème ensemble",
+          "keywords": ["resoudre", "ensemble", "probleme"],
+          "next": "discussion_suite"
+        }
+      ]
+    },
+    "discussion_suite": {
+      "message": "❤️ Notre discussion montre qu’une véritable amitié demande de l’écoute, de la confiance et du respect. J’aimerais approfondir un autre aspect avec toi. Selon toi, qu’est-ce qui permet à deux amis de rester proches malgré les désaccords ?",
+      "choices": [
+        {
+          "id": "dialogue_suite",
+          "label": "🗣️ Le dialogue sincère",
+          "keywords": ["dialogue", "sincere", "parler"],
+          "next": "verite"
+        },
+        {
+          "id": "confiance_suite",
+          "label": "🤝 La confiance",
+          "keywords": ["confiance", "fidele", "loyaute"],
+          "next": "confiance"
+        },
+        {
+          "id": "ecoute_suite",
+          "label": "👂 L’écoute",
+          "keywords": ["ecoute", "ecouter", "comprendre"],
+          "next": "ecoute"
+        },
+        {
           "id": "recommencer",
-          "label": "💬 Recommencer la discussion sur l’amitié",
-          "keywords": ["recommencer", "continuer", "amitie", "encore"],
+          "label": "💬 Recommencer depuis le début",
+          "keywords": ["recommencer", "depuis le debut"],
           "next": "question_principale"
         }
       ]
