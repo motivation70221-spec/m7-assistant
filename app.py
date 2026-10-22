@@ -648,11 +648,15 @@ def get_contextual_response(message):
 
     if normalized in positive_answers:
         topic_questions = {
-            "amitie": (
+           "amitie": (
                 "Tu sembles d'accord, mon ami ! ❤️ "
-                "Pour approfondir notre discussion sur l'amitié : "
-                "selon toi, qu'est-ce qui prouve qu'un ami "
-                "est vraiment sincère dans les moments difficiles ?"
+                "Approfondissons notre discussion sur l'amitié.\n\n"
+                "🧠 Que souhaites-tu découvrir ?\n\n"
+                "1. 🤝 Comment reconnaître un ami sincère ?\n"
+                "2. ❤️ Comment réparer une amitié blessée ?\n"
+                "3. 🛡️ Comment réagir face à un ami qui trahit ta confiance ?\n"
+                "4. 💬 Comment résoudre un désaccord avec un ami ?\n\n"
+                "Tu peux choisir un numéro ou répondre avec tes propres mots."
             ),
             "amour": (
                 "D'accord, mon ami ! ❤️ Continuons à parler d'amour. "
