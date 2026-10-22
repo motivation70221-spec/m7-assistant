@@ -696,6 +696,7 @@ def get_contextual_response(message):
             "Qu'aimerais-tu approfondir dans ce sujet ?"
         )
 
+        # Mémoriser les quatre choix proposés sur l'amitié.
         if last_topic == "amitie":
             session["pending_context_choices"] = [
                 "reconnaitre un ami sincere",
