@@ -1306,10 +1306,9 @@ def get_friendship_response(message):
                 best_score = score
                 best_choice = choice
 
-    # Si la réponse est libre, laisser le moteur
-    # de conversation analyser les mots de l'utilisateur.
+    # Si la réponse n'est pas reconnue,
+    # conserver l'étape actuelle de la conversation.
     if not best_choice or best_score < 50:
-        session.pop("friendship_step", None)
         return None
 
     # Passer à la prochaine étape du parcours.
