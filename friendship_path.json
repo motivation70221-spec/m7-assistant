@@ -235,24 +235,24 @@
         }
       ]
     },
-    "discussion_suite": {
-      "message": "❤️ Notre discussion montre qu’une véritable amitié demande de l’écoute, de la confiance et du respect. J’aimerais approfondir un autre aspect avec toi. Selon toi, qu’est-ce qui permet à deux amis de rester proches malgré les désaccords ?",
+       "discussion_suite": {
+      "message": "❤️ Une amitié solide se construit avec le temps, le dialogue et le respect. Chaque difficulté peut nous apprendre quelque chose. Quel aspect aimerais-tu approfondir maintenant ?",
       "choices": [
         {
           "id": "dialogue_suite",
           "label": "🗣️ Le dialogue sincère",
           "keywords": ["dialogue", "sincere", "parler"],
-          "next": "verite"
+          "next": "soutien"
         },
         {
           "id": "confiance_suite",
-          "label": "🤝 La confiance",
+          "label": "🤝 Reconstruire la confiance",
           "keywords": ["confiance", "fidele", "loyaute"],
-          "next": "confiance"
+          "next": "pardon"
         },
         {
           "id": "ecoute_suite",
-          "label": "👂 L’écoute",
+          "label": "👂 Apprendre à mieux écouter",
           "keywords": ["ecoute", "ecouter", "comprendre"],
           "next": "ecoute"
         },
@@ -264,5 +264,3 @@
         }
       ]
     }
-  }
-}
