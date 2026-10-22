@@ -1257,6 +1257,23 @@ def get_friendship_response(message):
 
     normalized = normalize_text(message)
 
+        # Recommencer le parcours lorsque l'utilisateur
+    # demande explicitement de reparler de l'amitié.
+    start_phrases = {
+        "parlons de l amitie",
+        "parlons amitie",
+        "reprenons l amitie",
+        "recommencer l amitie",
+        "commencons l amitie"
+    }
+
+    if normalized in start_phrases:
+        session.pop("friendship_step", None)
+        return format_friendship_step(
+            path,
+            path["start"]
+        )
+
     current_step_id = session.get("friendship_step")
 
     # Détecter le début d'une discussion sur l'amitié.
