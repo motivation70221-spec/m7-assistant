@@ -1302,24 +1302,11 @@ def get_friendship_response(message):
                 best_score = score
                 best_choice = choice
 
-    # Si le choix n'est pas assez clair, garder la même étape.
+    # Si la réponse est libre, laisser le moteur
+    # de conversation analyser les mots de l'utilisateur.
     if not best_choice or best_score < 50:
-        reply = (
-            "Je t'écoute, mon ami ! ❤️ "
-            "Pour continuer notre discussion, tu peux "
-            "choisir l'une des réponses proposées ou "
-            "reformuler ton idée."
-        )
-
-        choices = current_step.get("choices", [])
-
-        if choices:
-            reply += "\n\n"
-
-            for choice in choices:
-                reply += "\n" + choice.get("label", "")
-
-        return reply
+        session.pop("friendship_step", None)
+        return None
 
     # Passer à la prochaine étape du parcours.
     next_step_id = best_choice.get("next")
