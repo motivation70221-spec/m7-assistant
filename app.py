@@ -1384,6 +1384,31 @@ def chat_api():
         return create_chat_response(emoji_reply, message)
     # 3. Normaliser le message.
     normalized = normalize_text(message)
+    # Démarrer directement le parcours structuré de l'amitié.
+    friendship_start_phrases = {
+        "parlons de l amitie",
+        "parlons amitie",
+        "reprenons l amitie",
+        "recommencer l amitie",
+        "commencons l amitie"
+    }
+
+    if normalized in friendship_start_phrases:
+        path = load_friendship_path()
+
+        if path:
+            session.pop("friendship_step", None)
+
+            friendship_reply = format_friendship_step(
+                path,
+                path["start"]
+            )
+
+            if friendship_reply:
+                return create_chat_response(
+                    friendship_reply,
+                    message
+                )
     # 4. Répondre aux questions sur l'identité de M7.
     if normalized in {
         "qui es tu",
