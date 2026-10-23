@@ -191,13 +191,13 @@
           "id": "dialogue",
           "label": "❤️ Dialoguer avec lui",
           "keywords": ["dialogue", "discuter", "parler"],
-          "next": "discussion_suite"
+          "next": "verite"
         },
         {
           "id": "ecoute_libre",
           "label": "👂 Écouter son point de vue",
           "keywords": ["ecouter", "ecoute", "point de vue"],
-          "next": "discussion_suite"
+          "next": "ecouter"
         }
       ]
     },
