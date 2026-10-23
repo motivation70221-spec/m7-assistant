@@ -1374,14 +1374,6 @@ def chat_api():
             "Je suis là, mon ami. ❤️ "
             "Écris-moi ce que tu souhaites partager."
         )
-    # 1. Gérer les histoires M7.
-    story_reply = get_story_response(message)
-    if story_reply:
-        return create_chat_response(story_reply, message)
-    # 2. Reconnaître les emojis.
-    emoji_reply = get_emoji_response(message)
-    if emoji_reply:
-        return create_chat_response(emoji_reply, message)
     # 3. Normaliser le message.
     normalized = normalize_text(message)
     # Démarrer directement le parcours structuré de l'amitié.
@@ -1409,6 +1401,15 @@ def chat_api():
                     friendship_reply,
                     message
                 )
+    # 1. Gérer les histoires M7.
+    story_reply = get_story_response(message)
+    if story_reply:
+        return create_chat_response(story_reply, message)
+    # 2. Reconnaître les emojis.
+    emoji_reply = get_emoji_response(message)
+    if emoji_reply:
+        return create_chat_response(emoji_reply, message)
+
     # 4. Répondre aux questions sur l'identité de M7.
     if normalized in {
         "qui es tu",
