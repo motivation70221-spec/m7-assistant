@@ -518,31 +518,31 @@ def get_topic_response(message):
             "raconte une histoire inspirante"
         )
     ]
-  for topic_words, canonical_question in topic_routes:
-     if words.intersection(topic_words):
-          knowledge = find_knowledge(canonical_question)
+        for topic_words, canonical_question in topic_routes:
+        if words.intersection(topic_words):
+            knowledge = find_knowledge(canonical_question)
 
-          if knowledge:
-             explanation = knowledge.get("explanation")
-             advice = knowledge.get("advice", [])
-             questions = knowledge.get("follow_up_questions", [])
+            if knowledge:
+                explanation = knowledge.get("explanation")
+                advice = knowledge.get("advice", [])
+                questions = knowledge.get("follow_up_questions", [])
 
-              if explanation and advice:
-                 reply = (
-                      "❤️ " + explanation
-                      + "\n\n💡 Petit conseil : "
-                      + advice[0]
-                 )
+                if explanation and advice:
+                    reply = (
+                        "❤️ " + explanation
+                        + "\n\n💡 Petit conseil : "
+                        + advice[0]
+                    )
 
-                  if questions:
-                    reply += "\n\n💬 " + questions[0]
+                    if questions:
+                        reply += "\n\n💬 " + questions[0]
 
-                  return reply
+                    return reply
 
-               return knowledge.get("response")
+                return knowledge.get("response")
 
- # Dernière tentative : la phrase complète.
- return find_response(message)
+    # Dernière tentative : la phrase complète.
+    return find_response(message)
 # ==========================================================
 # EMOJIS ET ÉMOTIONS
 # ==========================================================
