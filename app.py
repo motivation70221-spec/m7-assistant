@@ -127,9 +127,10 @@ def load_knowledge():
                 if not clean_patterns:
                     continue
                 knowledge.append({
-                    "patterns": clean_patterns,
-                    "response": response
-                })
+               **item,
+               "patterns": clean_patterns,
+               "response": response
+           })
         except (OSError, json.JSONDecodeError) as error:
             app.logger.warning(
                 "Erreur de lecture de %s : %s",
