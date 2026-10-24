@@ -206,41 +206,64 @@ def score_pattern(message, pattern):
 # ==========================================================
 # RECHERCHE DANS LA BIBLIOTHÈQUE
 # ==========================================================
-def find_response(message):
-    """Choisit la réponse connue la plus pertinente."""
+def find_knowledge(message):
+    """Recherche la connaissance complète la plus pertinente."""
     normalized = normalize_text(message)
+
     if not normalized:
         return None
+
     knowledge = load_knowledge()
     candidates = []
+
     for item in knowledge:
         best_item_score = 0.0
+
         for pattern in item["patterns"]:
             score = score_pattern(normalized, pattern)
+
             if score > best_item_score:
                 best_item_score = score
+
         if best_item_score > 0:
             candidates.append({
                 "score": best_item_score,
-                "response": item["response"]
+                "knowledge": item
             })
+
     if not candidates:
         return None
+
     candidates.sort(
         key=lambda candidate: candidate["score"],
         reverse=True
     )
+
     best = candidates[0]
+
     if best["score"] < 0.60:
         return None
+
     if len(candidates) > 1:
         second = candidates[1]
+
         if (
             best["score"] - second["score"] < 0.03
             and best["score"] < 0.90
         ):
             return None
-    return best["response"]
+
+    return best["knowledge"]
+
+
+def find_response(message):
+    """Conserve la compatibilité avec les fonctions existantes."""
+    knowledge = find_knowledge(message)
+
+    if knowledge is None:
+        return None
+
+    return knowledge.get("response")
 # ==========================================================
 # SUJETS PROPOSÉS DANS L'INTERFACE
 # ==========================================================
