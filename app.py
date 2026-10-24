@@ -527,15 +527,15 @@ def get_topic_response(message):
                 advice = knowledge.get("advice", [])
                 questions = knowledge.get("follow_up_questions", [])
 
-                if explanation and advice:
-                    reply = (
-                        "❤️ " + explanation
-                        + "\n\n💡 Petit conseil : "
-                        + advice[0]
-                    )
+                  if explanation and advice:
+                      reply = (
+                          "❤️ " + explanation
+                          + "\n\n💡 Petit conseil : "
+                          + advice[0]
+                      )
 
-                    if questions:
-                        reply += "\n\n💬 " + questions[0]
+                      if questions:
+                          reply += "\n\n💬 " + questions[0]
 
                     return reply
 
