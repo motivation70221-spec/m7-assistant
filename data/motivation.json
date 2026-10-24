@@ -1,45 +1,45 @@
 [
-{
-“id”: “motivation_001”,
-“category”: “motivation”,
-“themes”: [
-“courage”,
-“perseverance”,
-“difficultes”,
-“espoir”
-],
-“emotions”: [
-“decouragement”,
-“doute”,
-“fatigue”
-],
-“patterns”: [
-“je veux de la motivation”,
-“motive moi”,
-“motive-moi”,
-“j’ai besoin de motivation”,
-“je manque de motivation”,
-“donne moi du courage”,
-“donne-moi du courage”,
-“je veux abandonner”,
-“je suis découragé”,
-“je suis decourage”,
-“je n’ai plus de courage”
-],
-“explanation”: “La motivation aide une personne à continuer malgré les difficultés. Elle peut être renforcée par de petites actions régulières, des objectifs réalistes et la reconnaissance de ses progrès.”,
-“advice”: [
-“Choisir une petite action réalisable aujourd’hui.”,
-“Se concentrer sur ses propres progrès plutôt que se comparer aux autres.”,
-“Identifier la difficulté principale avant de chercher une solution.”
-],
-“follow_up_questions”: [
-“Qu’est-ce qui te décourage en ce moment ?”,
-“Quel objectif aimerais-tu atteindre ?”,
-“Quelle petite action pourrais-tu entreprendre aujourd’hui ?”
-],
-“response”: “❤️ Mon ami, écoute bien : les moments difficiles ne signifient pas que ton histoire est terminée. Tu peux avancer petit à petit, même lorsque le chemin semble compliqué. Ne te compare pas aux autres : concentre-toi sur tes propres progrès. 💪 Dis-moi, qu’est-ce qui te décourage en ce moment ?”
-},
- {
+  {
+    "id": "motivation_001",
+    "category": "motivation",
+    "themes": [
+      "courage",
+      "perseverance",
+      "difficultes",
+      "espoir"
+    ],
+    "emotions": [
+      "decouragement",
+      "doute",
+      "fatigue"
+    ],
+    "patterns": [
+      "je veux de la motivation",
+      "motive moi",
+      "motive-moi",
+      "j'ai besoin de motivation",
+      "je manque de motivation",
+      "donne moi du courage",
+      "donne-moi du courage",
+      "je veux abandonner",
+      "je suis découragé",
+      "je suis decourage",
+      "je n'ai plus de courage"
+    ],
+    "explanation": "La motivation aide une personne à continuer malgré les difficultés. Elle peut être renforcée par de petites actions régulières, des objectifs réalistes et la reconnaissance de ses progrès.",
+    "advice": [
+      "Choisir une petite action réalisable aujourd'hui.",
+      "Se concentrer sur ses propres progrès plutôt que se comparer aux autres.",
+      "Identifier la difficulté principale avant de chercher une solution."
+    ],
+    "follow_up_questions": [
+      "Qu'est-ce qui te décourage en ce moment ?",
+      "Quel objectif aimerais-tu atteindre ?",
+      "Quelle petite action pourrais-tu entreprendre aujourd'hui ?"
+    ],
+    "response": "❤️ Mon ami, écoute bien : les moments difficiles ne signifient pas que ton histoire est terminée. Tu peux avancer petit à petit, même lorsque le chemin semble compliqué. Ne te compare pas aux autres : concentre-toi sur tes propres progrès. 💪 Dis-moi, qu'est-ce qui te décourage en ce moment ?"
+  },
+  {
     "patterns": [
       "comment rester motivé",
       "comment rester motive",
