@@ -1354,38 +1354,57 @@ def get_friendship_response(message):
     best_choice = None
     best_score = 0
 
-    for choice in current_step.get("choices", []):
-        keywords = choice.get("keywords", [])
+    choices = current_step.get("choices", [])
 
-        for keyword in keywords:
-            clean_keyword = normalize_text(keyword)
+    # 1. Reconnaître un choix donné sous forme de numéro.
+    numeric_match = re.fullmatch(
+        r"(?:choix|option|numero|reponse)?\s*([1-9])",
+        normalized
+    )
 
-            if not clean_keyword:
-                continue
+    if numeric_match:
+        choice_number = int(numeric_match.group(1))
 
-            # Correspondance avec une phrase complète.
-            if normalized == clean_keyword:
-                score = 100 + len(clean_keyword)
+        if 1 <= choice_number <= len(choices):
+            best_choice = choices[choice_number - 1]
+            best_score = 100
 
-            # Correspondance avec une expression dans la phrase.
-            elif (
-                len(clean_keyword) >= 4
-                and clean_keyword in normalized.split()
-            ):
-                score = 50 + len(clean_keyword)
+    # 2. Si aucun numéro valide n'est donné,
+    # chercher une réponse formulée avec des mots.
+    if best_choice is None:
+        for choice in choices:
+            keywords = choice.get("keywords", [])
 
-            elif (
-                len(clean_keyword) >= 5
-                and clean_keyword in normalized
-            ):
-                score = 20 + len(clean_keyword)
+            for keyword in keywords:
+                clean_keyword = normalize_text(keyword)
 
-            else:
-                score = 0
+                if not clean_keyword:
+                    continue
 
-            if score > best_score:
-                best_score = score
-                best_choice = choice
+                # Correspondance avec une phrase complète.
+                if normalized == clean_keyword:
+                    score = 100 + len(clean_keyword)
+
+                # Correspondance avec un mot entier.
+                elif (
+                    len(clean_keyword) >= 4
+                    and clean_keyword in normalized.split()
+                ):
+                    score = 50 + len(clean_keyword)
+
+                # Correspondance avec une expression.
+                elif (
+                    len(clean_keyword) >= 5
+                    and clean_keyword in normalized
+                ):
+                    score = 20 + len(clean_keyword)
+
+                else:
+                    score = 0
+
+                if score > best_score:
+                    best_score = score
+                    best_choice = choice
 
     # Si la réponse n'est pas reconnue,
     # conserver l'étape actuelle de la conversation.
