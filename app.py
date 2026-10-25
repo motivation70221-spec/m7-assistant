@@ -1083,14 +1083,23 @@ def get_story_response(message):
     """Gère le début, la suite et le changement d'histoire."""
     normalized = normalize_text(message)
     continue_messages = {
+        "oui",
+        "oui continue",
+        "oui continuer",
+        "continuer",
         "continue",
         "encore",
         "suivant",
         "la suite",
+        "oui la suite",
         "continue stp",
         "continue s il te plait",
         "continue l histoire",
+        "oui continue l histoire",
         "raconte la suite",
+        "oui raconte la suite",
+        "reprends l histoire",
+        "reprendre l histoire",
         "episode suivant",
         "episode 2",
         "episode 3"
