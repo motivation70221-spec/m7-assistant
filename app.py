@@ -1484,36 +1484,27 @@ def chat_api():
             friendship_reply,
             message
         )
-    # 6. Comprendre les idées exprimées dans la discussion.
-    followup_reply = get_followup_response(message)
-    if followup_reply:
-        return create_chat_response(
-            followup_reply,
-            message
-        )
-    # 7. Utiliser le contexte de la conversation.
-    contextual_reply = get_contextual_response(message)
-    if contextual_reply:
-        return create_chat_response(
-            contextual_reply,
-            message
-        )
-    # 8. Gérer les salutations et les messages courants.
+    # 7. Gérer les salutations et les messages courants.
     simple_reply = get_simple_response(message)
     if simple_reply:
         return create_chat_response(
             simple_reply,
             message
         )
-    # 9. Chercher une réponse liée au sujet.
+    # 8. Chercher d'abord une réponse adaptée dans les connaissances.
     reply = get_topic_response(message)
-    # 10. Chercher dans la bibliothèque de connaissances.
     if not reply:
         reply = find_response(message)
-    # 11. Répondre si aucune connaissance ne correspond.
+    # 9. Si aucune connaissance ne correspond,
+    # essayer de comprendre le message avec le contexte.
+    if not reply:
+        reply = get_followup_response(message)
+    if not reply:
+        reply = get_contextual_response(message)
+    # 10. Répondre si aucune réponse fiable n'a été trouvée.
     if not reply:
         reply = fallback_response()
-    # 12. Préparer la réponse et mémoriser le dialogue.
+    # 11. Préparer la réponse et mémoriser le dialogue.
     return create_chat_response(reply, message)
 # ==========================================================
 # VÉRIFICATION DU SERVEUR
