@@ -214,11 +214,28 @@
           "id": "laisser_choisir",
           "label": "🕊️ Le laisser choisir",
           "keywords": ["choisir", "decider", "liberte"],
-          "next": "discussion_suite"
+          "next": "autonomie"
         }
       ]
     },
-    "solutions": {
+  "autonomie": {
+  "message": "❤️ Respecter le choix d’un ami montre qu’on lui fait confiance. Mais si ton ami fait un choix que tu crois risqué, comment réagirais-tu sans décider à sa place ?",
+  "choices": [
+    {
+      "id": "conseil_respectueux",
+      "label": "❤️ Lui parler de mes inquiétudes avec respect",
+      "keywords": ["inquietudes", "expliquer", "risque", "parler"],
+      "next": "discussion_suite"
+    },
+    {
+      "id": "respecter_choix",
+      "label": "🤝 Rester à ses côtés et respecter son choix",
+      "keywords": ["rester", "cotes", "accompagner", "choix"],
+      "next": "discussion_suite"
+      }
+    ]
+  },
+      "solutions": {
       "message": "🧠 Chercher une solution ensemble peut être utile. Mais avant de conseiller un ami, ne faudrait-il pas comprendre ce qu’il ressent et ce dont il a besoin ?",
       "choices": [
         {
@@ -235,7 +252,7 @@
         }
       ]
     },
-       "discussion_suite": {
+      "discussion_suite": {
       "message": "❤️ Une amitié solide se construit avec le temps, le dialogue et le respect. Chaque difficulté peut nous apprendre quelque chose. Quel aspect aimerais-tu approfondir maintenant ?",
       "choices": [
         {
