@@ -82,23 +82,25 @@
         }
       ]
     },
-    "ecoute": {
-      "message": "👂 Savoir écouter est précieux. Quand un ami souffre, il a parfois besoin d’être compris avant de recevoir des conseils. Préfères-tu l’écouter d’abord ou chercher immédiatement une solution ?",
-      "choices": [
-        {
-          "id": "ecouter",
-          "label": "❤️ L’écouter d’abord",
-          "keywords": ["ecouter", "ecoute", "comprendre"],
-          "next": "ecouter"
-        },
-        {
-          "id": "solutions",
-          "label": "🧠 Chercher des solutions",
-          "keywords": ["solution", "conseil", "resoudre"],
-          "next": "solutions"
-        }
-      ]
-    },
+    “ecoute”: {
+“message”: “👂 Savoir écouter est précieux. Quand un ami souffre, il a parfois besoin d’être compris avant de recevoir des conseils. Préfères-tu l’écouter d’abord ou chercher immédiatement une solution ?”,
+“choices”: [
+{
+“id”: “ecouter”,
+“label”: “❤️ L’écouter d’abord”,
+“keywords”: [“ecouter”, “ecoute”, “comprendre”],
+“feedback”: “❤️ Écouter sans juger permet à un ami de se sentir compris et soutenu.”,
+“next”: “ecouter”
+},
+{
+“id”: “solutions”,
+“label”: “🧠 Chercher des solutions”,
+“keywords”: [“solution”, “conseil”, “resoudre”],
+“feedback”: “🧠 Chercher une solution peut aider, mais il est important de comprendre les besoins de son ami avant de lui donner des conseils.”,
+“next”: “solutions”
+}
+]
+},
     "presence": {
       "message": "❤️ Être présent peut aider un ami à se sentir moins seul. Mais comment réagirais-tu si ton ami ne voulait pas parler de son problème ?",
       "choices": [
