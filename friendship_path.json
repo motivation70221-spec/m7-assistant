@@ -201,22 +201,24 @@
         }
       ]
     },
-    "ecouter": {
-      "message": "❤️ Écouter sans juger peut déjà apporter beaucoup de réconfort. Mais si ton ami te demande un conseil, comment ferais-tu pour l’aider sans décider à sa place ?",
-      "choices": [
-        {
-          "id": "proposer",
-          "label": "🤝 Lui proposer des possibilités",
-          "keywords": ["proposer", "possibilites", "solutions"],
-          "next": "discussion_suite"
-        },
-        {
-          "id": "laisser_choisir",
-          "label": "🕊️ Le laisser choisir",
-          "keywords": ["choisir", "decider", "liberte"],
-          "next": "autonomie"
-        }
-      ]
+    “ecouter”: {
+    “message”: “👂 Savoir écouter est précieux. Quand un ami souffre, il a parfois besoin d’être compris avant de recevoir des conseils. Préfères-tu l’écouter d’abord ou chercher immédiatement une solution ?”,
+    “choices”: [
+    {
+    “id”: “ecouter”,
+    “label”: “❤️ L’écouter d’abord”,
+    “keywords”: [“ecouter”, “ecoute”, “comprendre”],
+    “feedback”: “❤️ Écouter sans juger permet à un ami de se sentir compris et soutenu.”,
+    “next”: “ecouter”
+    },
+    {
+    “id”: “solutions”,
+    “label”: “🧠 Chercher des solutions”,
+    “keywords”: [“solution”, “conseil”, “resoudre”],
+    “feedback”: “🧠 Chercher une solution peut aider, mais il est important de comprendre les besoins de son ami avant de lui donner des conseils.”,
+    “next”: “solutions”
+    }
+    ]
     },
   "autonomie": {
   "message": "❤️ Respecter le choix d’un ami montre qu’on lui fait confiance. Mais si ton ami fait un choix que tu crois risqué, comment réagirais-tu sans décider à sa place ?",
