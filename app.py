@@ -1421,10 +1421,28 @@ def get_friendship_response(message):
             "Continuons à discuter ensemble."
         )
 
-    return format_friendship_step(
+        # Préparer la réponse de la prochaine étape.
+    next_reply = format_friendship_step(
         path,
         next_step_id
     )
+
+    # Récupérer l'explication associée au choix.
+    feedback = best_choice.get("feedback", "")
+
+    if not isinstance(feedback, str):
+        feedback = ""
+
+    feedback = feedback.strip()
+
+    # Afficher l'explication avant la prochaine question.
+    if feedback and next_reply:
+        return feedback + "\n\n" + next_reply
+
+    if feedback:
+        return feedback
+
+    return next_reply
 
 # ==========================================================
 # API DE DISCUSSION
