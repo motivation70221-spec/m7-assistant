@@ -1273,7 +1273,8 @@ def load_friendship_path():
 
 
 def format_friendship_step(path, step_id):
-    """Prépare une étape et affiche ses choix."""
+    """Prépare une étape et affiche ses choix numérotés."""
+
     step = path["steps"].get(step_id)
 
     if not step:
@@ -1283,15 +1284,18 @@ def format_friendship_step(path, step_id):
     session["friendship_step"] = step_id
 
     reply = step.get("message", "")
-
     choices = step.get("choices", [])
 
     if choices:
-        reply += "\n\n"
-        reply += "💬 Choisis une réponse ou exprime-toi avec tes mots :\n"
+        reply += (
+            "\n\n"
+            "💬 Choisis une réponse ou exprime-toi "
+            "avec tes mots :\n"
+        )
 
-        for choice in choices:
-            reply += "\n" + choice.get("label", "")
+        for number, choice in enumerate(choices, start=1):
+            label = choice.get("label", "")
+            reply += f"\n{number}. {label}"
 
     return reply
 
