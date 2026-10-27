@@ -1401,7 +1401,7 @@ def get_friendship_response(message):
                     len(clean_keyword) >= 5
                     and clean_keyword in normalized
                 ):
-                    score = 20 + len(clean_keyword)
+                    score = 50 + len(clean_keyword)
 
                 else:
                     score = 0
