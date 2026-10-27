@@ -304,7 +304,7 @@
           "label": "🗣️ Le dialogue sincère",
           "keywords": ["dialogue", "sincere", "parler"],
           "feedback": "🗣️ Le dialogue sincère aide les amis à se comprendre et à résoudre leurs désaccords avec respect.",
-          "next": "soutien"
+          "next": "verite"
         },
         {
           "id": "confiance_suite",
