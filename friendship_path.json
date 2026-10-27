@@ -196,24 +196,24 @@
       ]
     },
 
-    "verite": {
-      "message": "❤️ Dire la vérité avec respect peut renforcer une amitié. Comment parlerais-tu à un ami qui a commis une erreur sans vouloir le blesser ?",
-      "choices": [
-        {
-          "id": "douceur",
-          "label": "🤝 Avec douceur et respect",
-          "keywords": ["douceur", "respect", "calmement"],
-          "feedback": "🤝 Parler avec douceur permet d’exprimer son désaccord sans rabaisser son ami.",
-          "next": "discussion_suite"
-        },
-        {
-          "id": "franchise",
-          "label": "🗣️ Avec franchise",
-          "keywords": ["franchise", "franchement", "honnetement"],
-          "feedback": "🗣️ La franchise est précieuse lorsqu’elle reste honnête, respectueuse et attentive aux sentiments de l’autre.",
-          "next": "discussion_suite"
-        }
-      ]
+    “verite”: {
+    “message”: “❤️ Dire la vérité avec respect peut renforcer une amitié. Comment parlerais-tu à un ami qui a commis une erreur sans vouloir le blesser ?”,
+    “choices”: [
+    {
+    “id”: “douceur”,
+    “label”: “🤝 Avec douceur et respect”,
+    “keywords”: [“douceur”, “respect”, “calmement”],
+    “feedback”: “🤝 Parler avec douceur permet d’exprimer son désaccord sans rabaisser son ami.”,
+    “next”: “suite_verite”
+    },
+    {
+    “id”: “franchise”,
+    “label”: “🗣️ Avec franchise”,
+    “keywords”: [“franchise”, “franchement”, “honnetement”],
+    “feedback”: “🗣️ La franchise est précieuse lorsqu’elle reste honnête, respectueuse et attentive aux sentiments de l’autre.”,
+    “next”: “suite_verite”
+    }
+    ]
     },
 
     "soutien": {
@@ -296,6 +296,26 @@
       ]
     },
 
+    “suite_verite”: {
+    “message”: “❤️ Parler avec douceur ou avec franchise peut aider à résoudre un désaccord. Mais si ton ami se fâche lorsque tu lui expliques son erreur, comment réagirais-tu ?”,
+    “choices”: [
+    {
+    “id”: “rester_calme”,
+    “label”: “🤝 Rester calme et l’écouter”,
+    “keywords”: [“calme”, “ecouter”, “ecoute”, “patience”],
+    “feedback”: “❤️ Rester calme permet d’éviter que le désaccord ne se transforme en dispute. Écouter son ami aide aussi à comprendre sa réaction.”,
+    “next”: “discussion_suite”
+    },
+    {
+    “id”: “expliquer”,
+    “label”: “💬 Réexpliquer mon point de vue avec respect”,
+    “keywords”: [“expliquer”, “respect”, “dialogue”, “reexpliquer”],
+    “feedback”: “💬 Expliquer son point de vue avec respect permet de défendre son opinion sans chercher à humilier son ami.”,
+    “next”: “discussion_suite”
+    }
+    ]
+    },
+    
     "discussion_suite": {
       "message": "❤️ Une amitié solide se construit avec le temps, le dialogue et le respect. Chaque difficulté peut nous apprendre quelque chose. Quel aspect aimerais-tu approfondir maintenant ?",
       "choices": [
