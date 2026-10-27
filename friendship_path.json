@@ -317,7 +317,7 @@
           "patience"
         ],
         "feedback": "❤️ Rester calme permet d’éviter que le désaccord ne se transforme en dispute. Écouter son ami aide aussi à comprendre sa réaction.",
-        "next": "discussion_suite"
+        "next": "suite_ecoute"
       },
       {
         "id": "expliquer",
@@ -329,6 +329,36 @@
           "reexpliquer"
         ],
         "feedback": "💬 Expliquer son point de vue avec respect permet de défendre son opinion sans chercher à humilier son ami.",
+        "next": "discussion_suite"
+      }
+    ]
+  },
+
+    "suite_ecoute": {
+    "message": "❤️ Tu as essayé de parler avec douceur et d'expliquer ton point de vue. Si ton ami refuse toujours de t'écouter, que ferais-tu ?",
+    "choices": [
+      {
+        "id": "laisser_temps",
+        "label": "🕊️ Lui laisser du temps pour réfléchir",
+        "keywords": [
+          "temps",
+          "reflechir",
+          "patience",
+          "calme"
+        ],
+        "feedback": "🤝 Parfois, laisser du temps à un ami permet d'apaiser les tensions. Il est important de respecter son rythme sans abandonner le dialogue.",
+        "next": "discussion_suite"
+      },
+      {
+        "id": "dialoguer",
+        "label": "💬 Essayer de dialoguer à nouveau avec respect",
+        "keywords": [
+          "dialogue",
+          "parler",
+          "expliquer",
+          "respect"
+        ],
+        "feedback": "❤️ Un dialogue respectueux peut aider à résoudre un désaccord, à condition que chacun puisse s'exprimer librement.",
         "next": "discussion_suite"
       }
     ]
