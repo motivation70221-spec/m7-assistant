@@ -1333,7 +1333,7 @@ def get_friendship_response(message):
 
     normalized = normalize_text(message)
 
-        # Recommencer le parcours lorsque l'utilisateur
+    # Recommencer le parcours lorsque l'utilisateur
     # demande explicitement de reparler de l'amitié.
     start_phrases = {
         "parlons de l amitie",
@@ -1380,6 +1380,25 @@ def get_friendship_response(message):
     best_score = 0
 
     choices = current_step.get("choices", [])
+     # Donner la priorité à une réponse naturelle
+    # lorsque l'utilisateur explique une dispute.
+    if session.get("last_topic") == "amitie":
+        message_words = set(normalized.split())
+
+        calming_words = {
+            "calme", "calmer", "attendre", "attente",
+            "dispute", "aggraver", "colere", "tension",
+            "tensions", "conflit", "conflits"
+        }
+
+        if (
+            len(message_words) >= 7
+            and message_words.intersection(calming_words)
+        ):
+            natural_reply = get_followup_response(message)
+
+            if natural_reply:
+                return natural_reply
 
     # 1. Reconnaître un choix donné sous forme de numéro.
     numeric_match = re.fullmatch(
