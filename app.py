@@ -852,6 +852,27 @@ def get_followup_response(message):
 
     # Comprendre différentes façons de parler de l'amitié.
     if last_topic == "amitie":
+        # Comprendre les réponses libres sur les disputes
+        # et la volonté d'apaiser les tensions.
+        calming_words = {
+            "calme", "calmer", "attendre", "attente",
+            "dispute", "aggraver", "colere", "tension",
+            "tensions", "conflit", "conflits"
+        }
+
+        if (
+            len(words) >= 7
+            and words.intersection(calming_words)
+        ):
+            return (
+                "❤️ Je comprends ton point de vue. "
+                "Tu veux laisser retomber la colère plutôt "
+                "que d'aggraver la dispute. Prendre un peu "
+                "de recul peut aider chacun à retrouver son calme.\n\n"
+                "🤝 Si ton ami ne revient pas vers toi après "
+                "quelques jours, essaierais-tu de faire "
+                "le premier pas pour reprendre le dialogue ?"
+            )
         matched_ideas = []
 
         for idea, keywords in friendship_ideas.items():
