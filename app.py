@@ -1379,7 +1379,7 @@ def get_friendship_response(message):
     best_choice = None
     best_score = 0
 
-     choices = current_step.get("choices", [])
+    choices = current_step.get("choices", [])
 
     # Donner la priorité à une réponse naturelle
     # lorsque l'utilisateur explique une dispute.
